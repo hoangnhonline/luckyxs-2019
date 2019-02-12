@@ -8,6 +8,7 @@ use BotMan\BotMan\Drivers\DriverManager;
 use App\Models\Channel;
 use App\Models\BetType;
 use App\Models\Bet;
+use App\Models\Message;
 use App\User;
 class TelegramController extends Controller
 {
@@ -87,25 +88,82 @@ class TelegramController extends Controller
 		    $bot->reply('Hi cc.');
 		});
 
-		$botman->hears('{mess}', function (BotMan $bot, $mess) {
-			$userInfo = $bot->getUser()->getId();
-			
-			$bot->reply('OK: ' . $mess);
+		$botman->hears('((.|\n)*)', function (BotMan $bot, $message) {
+			$userId = $bot->getUser()->getId();
 
+			$userExists = User::where('tel_id', '=', $userId)->count() >= 1;
+			if (!$userExists) {
+				$user = new User();
+				$user->username = $message;
+				$user->password = '';
+				$user->tel_id   = $userId;
+				$user->save();
+			}
 			
+			$bot->reply('OK: ' . $message);
+
+			$message_id = Message::create(['tel_id' => $userId, 'content' => $message]);
 			
+			$this->processMessage($message, $message_id);
+			$bot->reply('OK: ' . $mess);
 		});
 		// Start listening
 		$botman->listen();
     }
+    function processMessage($message, $message_id){    	
+        $message = (preg_replace('/([t])([0-9,{1,}])/', ' ', $message));
+        $message = $this->formatMessage($message);
 
-    function insertDB($betDetail){
+        $message = (preg_replace('/([0-9]*)([n])/', ' $1$2 ', $message));
+        $message = (preg_replace('/([0-9]{2,})([a-z]{2,})/', '$1 $2', $message));
+        $message = $this->formatMessage($message);
+       
+        $tmpArr = explode(" ", $message);
+        $countAmount = $countChannel = $countBetType = 0;
+        $amountArr = $channelArr = $betTypeArr = [];    
+       
+        foreach($tmpArr as $k => $value){
+            
+            if($this->isChannel($value)){
+                $countChannel++;
+                $channelArr[] = $k;
+            }
+
+        }
+        // nếu tin nhắn ko có đài thì mặc định là dc
+        // TH chi co 1
+        $betArr = [];
+        //dd($channelArr);
+        //echo "<br>";
+        if(count($channelArr) > 0){
+            foreach($channelArr as $key => $value){           
+                $position =   isset($channelArr[$key+1]) ? $channelArr[$key+1] : count($tmpArr);
+                $start = $key > 0 ? $value : 0;
+                $betArr[] = array_slice($tmpArr, $start, $position-$start);
+                
+            }
+        }else{
+            $betArr[] = $tmpArr;
+        }   
+
+        foreach($betArr as $arr){
+            $betArrDetail[] = $this->parseBetToChannel($arr);
+        }
+        $betDetail = [];     
+        //dd($betArrDetail);
+        foreach($betArrDetail as $k => $betChannelDetail){
+            $tmp2 = $this->parseDetail($betChannelDetail);            
+            $betDetail = array_merge($betDetail, $tmp2);
+        }
+           
+        $this->insertDB($betDetail, $message_id);
+    }
+    function insertDB($betDetail, $message_id){
         //dd($betDetail);
       
         foreach($betDetail as $k => $oneBet){  
                 
-            $bet_type = $oneBet['bet_type'];
-            $message_id = 1;
+            $bet_type = $oneBet['bet_type'];           
             $channelArr = $this->getChannelId($oneBet['channel']);
             $bet_type_id = $this->getBetTypeId($bet_type); 
             //dd($bet_type);
