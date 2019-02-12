@@ -99,7 +99,7 @@ class TestController extends Controller
 // b.33.10n
 // xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n
 // T5";
-        $message = "Ch da 12 14.10n dp 15 16 da 10n";
+        $message = "Ch da 12 14.10n dp 15 16 17 dv 10n 2d bl 570 10n";
         echo "<h3>".$message."</h3>";
         $message = (preg_replace('/([t])([0-9,{1,}])/', ' ', $message));
         $message = $this->formatMessage($message);
@@ -142,7 +142,7 @@ class TestController extends Controller
             $betArrDetail[] = $this->parseBetToChannel($arr);
         }
         $betDetail = [];     
-
+        dd($betArrDetail);
         foreach($betArrDetail as $k => $betChannelDetail){
             $tmp2 = $this->parseDetail($betChannelDetail);            
             $betDetail = array_merge($betDetail, $tmp2);
