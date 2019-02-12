@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.0
+-- version 4.7.7
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Feb 12, 2019 at 09:40 AM
--- Server version: 10.1.31-MariaDB
--- PHP Version: 7.2.13
+-- Host: localhost
+-- Generation Time: Feb 12, 2019 at 10:55 PM
+-- Server version: 10.2.12-MariaDB
+-- PHP Version: 7.1.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -40,21 +40,13 @@ CREATE TABLE `bet` (
   `total` int(11) DEFAULT NULL,
   `after` int(11) DEFAULT NULL,
   `result` int(11) DEFAULT NULL,
-  `win` tinyint(1) NOT NULL DEFAULT '0',
-  `is_main` tinyint(1) NOT NULL DEFAULT '1',
-  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `win` tinyint(1) NOT NULL DEFAULT 0,
+  `is_main` tinyint(1) NOT NULL DEFAULT 1,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
   `bet_day` date DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `bet`
---
-
-INSERT INTO `bet` (`id`, `bet_type_id`, `message_id`, `channel_id`, `refer_bet_id`, `number_1`, `number_2`, `price`, `total`, `after`, `result`, `win`, `is_main`, `status`, `bet_day`, `created_at`, `updated_at`) VALUES
-(1, 5, 1, 7, NULL, '12', '14', 10, 720, NULL, NULL, 0, 1, 1, '2019-02-12', '2019-02-12 08:34:51', '2019-02-12 08:34:51'),
-(2, 5, 1, 8, NULL, '15', '16', 10, 720, NULL, NULL, 0, 1, 1, '2019-02-12', '2019-02-12 08:34:51', '2019-02-12 08:34:51');
 
 -- --------------------------------------------------------
 
@@ -68,8 +60,8 @@ CREATE TABLE `bet_type` (
   `content` varchar(100) NOT NULL,
   `example` varchar(255) NOT NULL,
   `display_order` tinyint(4) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -104,8 +96,8 @@ CREATE TABLE `channel` (
   `code` varchar(3) NOT NULL,
   `name` varchar(20) NOT NULL,
   `display_order` tinyint(4) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -139,26 +131,40 @@ INSERT INTO `channel` (`id`, `code`, `name`, `display_order`, `created_at`, `upd
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `messages`
+--
+
+CREATE TABLE `messages` (
+  `id` bigint(20) NOT NULL,
+  `tel_id` text DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `fullname` varchar(255) NOT NULL,
+  `fullname` varchar(255) DEFAULT NULL,
   `display_name` varchar(100) DEFAULT NULL,
   `tel_id` varchar(255) DEFAULT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` tinyint(1) NOT NULL,
+  `role` tinyint(1) DEFAULT NULL,
   `leader_id` int(11) DEFAULT NULL,
-  `is_logout` tinyint(1) NOT NULL DEFAULT '1',
-  `status` tinyint(1) NOT NULL DEFAULT '1',
-  `changed_password` tinyint(1) NOT NULL DEFAULT '0',
-  `remember_token` varchar(255) NOT NULL,
-  `created_user` int(11) NOT NULL,
-  `updated_user` int(11) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `is_logout` tinyint(1) NOT NULL DEFAULT 1,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `changed_password` tinyint(1) NOT NULL DEFAULT 0,
+  `remember_token` varchar(255) DEFAULT NULL,
+  `created_user` int(11) DEFAULT NULL,
+  `updated_user` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -166,7 +172,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `fullname`, `display_name`, `tel_id`, `username`, `password`, `role`, `leader_id`, `is_logout`, `status`, `changed_password`, `remember_token`, `created_user`, `updated_user`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'Admin', NULL, 'admin@vhvschool.online', '$2y$10$UHDKhzeFOLfdCBWQ7GgEFeHmzlglsfrLheHRoOvP3FSKuKKf1D5x2', 3, 1, 1, 1, 0, '3WrS9U7L0xRlZrFeQxfYjFrszeeH2zzZRwUtUr37ylH4JDYmkzrlKbSwS0zN', 1, 1, '2017-06-28 00:00:00', '2018-10-22 15:48:17');
+(1, 'Admin', 'Admin', NULL, 'admin@vhvschool.online', '$2y$10$UHDKhzeFOLfdCBWQ7GgEFeHmzlglsfrLheHRoOvP3FSKuKKf1D5x2', 3, 1, 1, 1, 0, '3WrS9U7L0xRlZrFeQxfYjFrszeeH2zzZRwUtUr37ylH4JDYmkzrlKbSwS0zN', 1, 1, '2017-06-28 00:00:00', '2018-10-22 15:48:17'),
+(16, NULL, NULL, '495662200', 'tau', 'e10adc3949ba59abbe56e057f20f883e', NULL, NULL, 1, 1, 0, NULL, NULL, NULL, '2019-01-29 06:26:10', '2019-01-29 06:26:10'),
+(35, NULL, NULL, '465366291', 'anhpx', '12345', NULL, NULL, 1, 1, 0, NULL, NULL, NULL, '2019-01-29 06:28:35', '2019-01-29 06:28:35'),
+(54, NULL, NULL, '711931183', 'đây mới gọi là âm ', '123456', NULL, NULL, 1, 1, 0, NULL, NULL, NULL, '2019-01-29 07:06:53', '2019-01-29 07:06:53');
 
 --
 -- Indexes for dumped tables
@@ -198,10 +207,17 @@ ALTER TABLE `channel`
   ADD KEY `code_2` (`code`);
 
 --
+-- Indexes for table `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `tel_id` (`tel_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -211,7 +227,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bet`
 --
 ALTER TABLE `bet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bet_type`
@@ -226,10 +242,16 @@ ALTER TABLE `channel`
   MODIFY `id` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
+-- AUTO_INCREMENT for table `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
