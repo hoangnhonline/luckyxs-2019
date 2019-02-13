@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Channel;
 use App\Models\BetType;
 use App\Models\Bet;
+use App\Models\Message;
+use Illuminate\Http\Request;
+use Auth;
 class TestController extends Controller
 {
     private $channelList;
@@ -67,6 +70,20 @@ class TestController extends Controller
         $this->betTypeList = BetType::pluck('keyword', 'id')->toArray();   
         $this->betTypeListKey = array_flip($this->betTypeList);    
     }
+    public function messagesList(){
+        $user = Auth::user();
+        $tel_id = $user->tel_id;
+        $messageList = Message::where('tel_id', $tel_id)->whereDate('created_at', '=', date('Y-m-d'))->get();
+        return view('messages.list', compact('messageList'));
+    }
+    public function messagesDetail(Request $request){
+        $user = Auth::user();
+        $tel_id = $user->tel_id;
+        $message_id = $request->id;
+        $detail = Message::where('tel_id', $tel_id)->where('id', $message_id)->first();        
+        $betList = Bet::where('message_id', $message_id)->get();
+        return view('messages.detail', compact('detail', 'betList'));
+    }
     public function index()
     {
         //$message = "dc . 841.915.279.xc.50n. 2d . 62.03.da10n. 723..491 x.50n 13.64 da5n. t2";
@@ -89,7 +106,7 @@ class TestController extends Controller
         $message = "2d da 22.98.1n. 13.41.1n. 95.13.1n. 29.95.1n. 29.41.1n...2d dav 76.41.95.1n da 41.02.1n 95.20.1n 41.20.1n 95.02.1n 13.51.1n t3";
         
         $message = "2d.da.29.69.da1n.06.23.da2n.t5";
-        $message = "2d.dacap 18.58-98-18-58.98-14.54-94.14-54.94-89.98-10.51-1n t4";
+        //$message = "2d.dacap 18.58-98-18-58.98-14.54-94.14-54.94-89.98-10.51-1n t4";
         // chua dc sai code //$message = "Ch bl 2852.10n 2852.d2n 
 // 2dai b 773.733.2n
 // xc.126.20n 772.658.384.5n
@@ -99,6 +116,8 @@ class TestController extends Controller
 // xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n
 // T5";
         //$message = "2d 123 dxc 10n dp 12 13 14 dxv 10n";
+        $userDetail = Auth::user();
+        $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";
         $message = (preg_replace('/([t])([0-9,{1,}])/', ' ', $message));
         $message = $this->formatMessage($message);
@@ -146,15 +165,14 @@ class TestController extends Controller
             $betDetail = array_merge($betDetail, $tmp2);
         }
            
-        $this->insertDB($betDetail);        
+        $this->insertDB($betDetail, $message_id);
     }
-    function insertDB($betDetail){
-        //dd($betDetail);
-      
+    function insertDB($betDetail, $message_id){
+        //dd($betDetail);        
         foreach($betDetail as $k => $oneBet){  
                 
             $bet_type = $oneBet['bet_type'];
-            $message_id = 1;
+            
             $channelArr = $this->getChannelId($oneBet['channel']);
             $bet_type_id = $this->getBetTypeId($bet_type); 
             //dd($bet_type);

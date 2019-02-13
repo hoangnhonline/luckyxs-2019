@@ -42,5 +42,12 @@ class Bet extends Model  {
         'created_at',
         'updated_at',
     ];
-        
+    public function betType()
+    {
+        return $this->belongsTo('App\Models\BetType', 'bet_type_id');
+    }
+    public function channel()
+    {
+        return $this->belongsTo('App\Models\Channel', 'channel_id');
+    }  
 }
