@@ -86,26 +86,13 @@ class TestController extends Controller
     }
     public function index()
     {
-        //$message = "dc . 841.915.279.xc.50n. 2d . 62.03.da10n. 723..491 x.50n 13.64 da5n. t2";
         
-        $message = "2 đài 32-23.da.10n.21.28.da5n.26.66.da1n..da 98.57.2n dav 41.76.95.39.1n.2d da 39.41.1n.69.51.1n.83.39.1n.t.1";
-        $message = "2d.dav 13.95.07.39.1n da 13.51.1n 63.51.1n 98.57.1n 22.98.1n 22.39.1n 22.95.1n 22.13.1n t.4";
-        $message = "2dai da 14.54--94.14--54.94--18.58--98.18--58.98--38.78-1n 2d.36.32.72 da2n.t5";
-        $message = "2dai da 14.54  1n t5";
-       /// chua dc $message = "2d da 07.76.1n.22.41.1n. la.18.68.19.99.dau,100n.81.dau.100n.dui.400n.t6";
-        $message = "2d . 68 - 14 da3n . 10 - 01 da3n . t7";
-        // chua dc b 10n // $message = "dc.79.dui.200n.2d.72.79.da1n.33.73.da10n.2d 46 64 da 5n b 10n.t6";
-        // chua dc $message = "00.01.03.04.05.06.07.08.09.20.dd da300n,dp t3";
-        $message = "dc . 3312 b10n 2d 62 03 da10n . t1";
-        $message = "2d..da 14.54--94.14--54.94--18.58--98.18--58.98--20.02--58.85-1n 2d dav 07.95.41.76.1n da 22.41.1n 22.98.1n 22.76.1n 22.95.1n.t.2";
-        // chua dc $message = "2d . 92 - 38 da3n . 115163.đav5n. 185807.đav5n . phu 1668 b20n. 2d . 57, 53da 8n .18.32 da2n . 15 55 95 da5n t3";
-        $message = "2d 35-53-89-98 dav10n.";
-       // chua dc sai code // $message = "Ch bl 2852.10n 2852.d2n 2dai b 773.733.2n xc.126.20n 772.658.384.5n B 06.10n dc.dd.37.19.30n b.33.10n xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n T5";
-        $message = "2dai b 773.733.2n xc.126.20n 772.658.384.5n B 06.10n";
-        $message = "dc . 841.915.279.xc.50n. 2d . 62.03.da10n. 723..491 x.50n 13.64 da5n dc 20 30 40 dv10n. t2";
-        $message = "2d da 22.98.1n. 13.41.1n. 95.13.1n. 29.95.1n. 29.41.1n...2d dav 76.41.95.1n da 41.02.1n 95.20.1n 41.20.1n 95.02.1n 13.51.1n t3";
         
-        $message = "2d.da.29.69.da1n.06.23.da2n.t5";
+        //$message = "00.01.03.04.05.06.07.08.09.20.dd da300n,dp t3";
+       
+        $message = "2d . 92 - 38 da3n . 115163.đav5n. 185807.đav5n . phu 1668 b20n. 2d . 57, 53da 8n .18.32 da2n . 15 55 95 da5n t3";
+       
+       // chua dc sai code // $message = "Ch bl 2852.10n 2852.d2n 2dai b 773.733.2n xc.126.20n 772.658.384.5n B 06.10n dc.dd.37.19.30n b.33.10n xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n T5";       
         //$message = "2d.dacap 18.58-98-18-58.98-14.54-94.14-54.94-89.98-10.51-1n t4";
         // chua dc sai code //$message = "Ch bl 2852.10n 2852.d2n 
 // 2dai b 773.733.2n
@@ -119,18 +106,18 @@ class TestController extends Controller
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";
+        //$message = "T6.hn 77;88;99 đa vòng 15n";
         $message = (preg_replace('/([t])([0-9,{1,}])/', ' ', $message));
-        $message = $this->formatMessage($message);
-
+        $message = $this->formatMessage($message);        
+        
         $message = (preg_replace('/([0-9]*)([n])/', ' $1$2 ', $message));
         $message = (preg_replace('/([0-9]{2,})([a-z]{2,})/', '$1 $2', $message));
         $message = $this->formatMessage($message);
-        echo $message;
-       
+        echo $message;       
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
         $amountArr = $channelArr = $betTypeArr = [];    
-       
+        
         foreach($tmpArr as $k => $value){
             
             if($this->isChannel($value)){
@@ -154,7 +141,7 @@ class TestController extends Controller
         }else{
             $betArr[] = $tmpArr;
         }   
-
+        //dd($betArr);
         foreach($betArr as $arr){
             $betArrDetail[] = $this->parseBetToChannel($arr);
         }
@@ -164,7 +151,7 @@ class TestController extends Controller
             $tmp2 = $this->parseDetail($betChannelDetail);            
             $betDetail = array_merge($betDetail, $tmp2);
         }
-           
+        //dd($betDetail);
         $this->insertDB($betDetail, $message_id);
     }
     function insertDB($betDetail, $message_id){
@@ -259,8 +246,15 @@ class TestController extends Controller
             }
         }
     }
-    function processDvDxv($oneBet, $bet_type_id, $channelArr, $message_id){
-        // dd($oneBet);
+    function processDvDxv($oneBet, $bet_type_id, $channelArr, $message_id){        
+        if(count($oneBet['number']) == 1){
+            for($i = 0; $i < strlen($oneBet['number'][0]); $i++){
+                if($i%2 == 0){
+                    $arrNumber[] = substr($oneBet['number'][0], $i, 2);
+                }
+            }
+            $oneBet['number'] = $arrNumber;
+        }        
         $arrCapSoDaVong = $this->getCapSoDaVong($oneBet['number']);
         //dd($arrCapSoDaVong);
         if(!empty($arrCapSoDaVong)){
@@ -322,7 +316,7 @@ class TestController extends Controller
          $bettttt = []; 
         // dd($betArrDetail);
         foreach($betArrDetail as $channel => $arr){
-            
+            $countII = 0;
             foreach($arr as $tmp){
                 $channel_bet = $channel;
                 $price = str_replace("n", "", array_pop($tmp)); // lay so tien va xoa luon
@@ -336,6 +330,12 @@ class TestController extends Controller
                         $arr_number[] = $tmp1; 
                     }
                 }
+                if(empty($arr_number)){
+                    $arr_number = $numberArr[$countII-1];
+                }
+                $numberArr[$countII] = $arr_number;   
+
+                //var_dump("<pre>", $numberArr);
                 //dd($arr_number);
                 if($bet_type == 'dv' || $bet_type == 'dxv'){
                     $bettttt[] = [
@@ -385,6 +385,7 @@ class TestController extends Controller
 
                    
                 }else{
+                    
                     foreach($arr_number as $numberBet){
                         $bettttt[] = [
                             'channel' => $channel_bet,
@@ -394,7 +395,7 @@ class TestController extends Controller
                         ];
                     } 
                 }
-                               
+                $countII++;          
             }
             
         }
@@ -431,6 +432,7 @@ class TestController extends Controller
         $message = str_replace("...", " ", $message);
         $message = str_replace("..", " ", $message);
         $message = str_replace(".", " ", $message);
+        $message = str_replace(";", " ", $message);
         $message = str_replace("---", " ", $message);
         $message = str_replace("--", " ", $message);
         $message = str_replace("-", " ", $message);
@@ -454,7 +456,8 @@ class TestController extends Controller
         $message = str_replace("ch", "dc", $message);       
         $message = str_replace("dav", "dv", $message);
         $message = str_replace("dacap", "da", $message);
-        
+        $message = str_replace("da vong", "dv", $message);
+        $message = str_replace("dav", "dv", $message);
         
         return $message;
     }
