@@ -90,9 +90,7 @@ class TestController extends Controller
         
         //$message = "00.01.03.04.05.06.07.08.09.20.dd da300n,dp t3";
        
-        $message = "2d . 92 - 38 da3n . 115163.đav5n. 185807.đav5n . phu 1668 b20n. 2d . 57, 53da 8n .18.32 da2n . 15 55 95 da5n t3";
-       
-       // chua dc sai code // $message = "Ch bl 2852.10n 2852.d2n 2dai b 773.733.2n xc.126.20n 772.658.384.5n B 06.10n dc.dd.37.19.30n b.33.10n xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n T5";       
+       $message = "Ch bl 2852.10n 2852.d2n 2dai b 773.733.2n xc.126.20n 772.658.384.5n B 06.10n dc.dd.37.19.30n b.33.10n xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n T5";       
         //$message = "2d.dacap 18.58-98-18-58.98-14.54-94.14-54.94-89.98-10.51-1n t4";
         // chua dc sai code //$message = "Ch bl 2852.10n 2852.d2n 
 // 2dai b 773.733.2n
@@ -146,7 +144,7 @@ class TestController extends Controller
             $betArrDetail[] = $this->parseBetToChannel($arr);
         }
         $betDetail = [];     
-        //dd($betArrDetail);
+        dd($betArrDetail);
         foreach($betArrDetail as $k => $betChannelDetail){
             $tmp2 = $this->parseDetail($betChannelDetail);            
             $betDetail = array_merge($betDetail, $tmp2);
@@ -535,6 +533,9 @@ class TestController extends Controller
             case 3: // duoi 1 lo
                 $total = $price;
                 break;
+            case 1: // dau duoi 2 lo
+                $total = $price*2;
+                break;    
             case 4: // bao lo
                 if($length == 2){
                     $total = $price*18;    
