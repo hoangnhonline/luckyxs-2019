@@ -20,6 +20,7 @@ Route::group(['namespace' => 'Auth', 'prefix' => 'auth'], function () {
 Route::group(['middleware' => ['auth:web', 'role']], function () {
 	Route::get('/test', 'TestController@index')->name('test');
     Route::get('/', ['as' => 'dashboard', 'uses' => 'TestController@messagesList']);
+    Route::get('/mau', ['as' => 'mau', 'uses' => 'TestController@mau']);
     Route::get('/messages-list', ['as' => 'messages.list', 'uses' => 'TestController@messagesList']);
     Route::get('{id}/messages-detail', ['as' => 'messages.detail', 'uses' => 'TestController@messagesDetail']);
 });

@@ -46,7 +46,7 @@
                   {{ $i }}
                 </td>
                 <td>
-                	{{ $bet->channel->name }}
+                	<span style="text-transform: uppercase;">{{ $bet->channel->code }}</span>
                 </td>
                 <td>
                  	{{ $bet->betType->content }}

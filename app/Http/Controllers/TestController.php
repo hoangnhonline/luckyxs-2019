@@ -8,8 +8,9 @@ use App\Models\Channel;
 use App\Models\BetType;
 use App\Models\Bet;
 use App\Models\Message;
+use App\Models\MessageMau;
 use Illuminate\Http\Request;
-use Auth;
+use Auth, Session;
 class TestController extends Controller
 {
     private $channelList;
@@ -73,8 +74,13 @@ class TestController extends Controller
     public function messagesList(){
         $user = Auth::user();
         $tel_id = $user->tel_id;
-        $messageList = Message::where('tel_id', $tel_id)->whereDate('created_at', '=', date('Y-m-d'))->get();
+        $messageList = Message::where('tel_id', $tel_id)->whereDate('created_at', '=', date('Y-m-d'))->orderBy('id', 'desc')->get();
         return view('messages.list', compact('messageList'));
+    }
+    public function mau(){
+       
+        $messageList = MessageMau::where('status', 3)->get();
+        return view('messages.mau', compact('messageList'));
     }
     public function messagesDetail(Request $request){
         $user = Auth::user();
@@ -85,33 +91,42 @@ class TestController extends Controller
         return view('messages.detail', compact('detail', 'betList'));
     }
     public function index()
-    {
-        
-        
+    {        
         //$message = "00.01.03.04.05.06.07.08.09.20.dd da300n,dp t3";
-       
-       $message = "Ch bl 2852.10n 2852.d2n 2dai b 773.733.2n xc.126.20n 772.658.384.5n B 06.10n dc.dd.37.19.30n b.33.10n xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n T5";       
-        //$message = "2d.dacap 18.58-98-18-58.98-14.54-94.14-54.94-89.98-10.51-1n t4";
-        // chua dc sai code //$message = "Ch bl 2852.10n 2852.d2n 
-// 2dai b 773.733.2n
-// xc.126.20n 772.658.384.5n
-// B 06.10n
-// dc.dd.37.19.30n
-// b.33.10n
-// xc.651.146.172.107.30n 481.981.338.833.20n.251.042.468.145.551.583.10n
-// T5";
-        //$message = "2d 123 dxc 10n dp 12 13 14 dxv 10n";
+  
+        
+        #17, 19, 20, 21, 23, 25,30, 37, 38, 39, 46,47, 49 (038.336.259.b2nxx8n), 52
+        
+        $message = "Chanh 951.915. xc10n. T17";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";
         //$message = "T6.hn 77;88;99 đa vòng 15n";
+        // 500 dong
+        $message = preg_replace('/(05)(\s)(db)/', '9990ndb', $message);
+        $message = preg_replace('/(05)(\s)(bl)/', '9990ndb', $message);
+        dd($message);
+        // end 500 dong
+        $message = (preg_replace('/([\s|\.])([0-9,{1}])(.)([5])([a-z]*)/', ' 999$2n$5', $message));
+        dd($message);
         $message = (preg_replace('/([t])([0-9,{1,}])/', ' ', $message));
-        $message = $this->formatMessage($message);        
+        //$message = preg_replace('/([a-zA-Z,{1,}])([0-9,{1,}])([\.\s])/', ' $1$2n ', $message); T21
+        //dd($message); 
+        $message = $this->formatMessage($message);    
+    
+        $message = preg_replace('/([a-z]*)([0-9,{1,}]*)([n])/', ' $1$2$3', $message);   
         
-        $message = (preg_replace('/([0-9]*)([n])/', ' $1$2 ', $message));
+
+        $message = preg_replace('/([0-9,{1,}]*)([n])([a-z]*)/', ' $3$1$2 ', $message);
+
+        $message = preg_replace('/([0-9]*)([n])/', ' $1$2 ', $message);
+        
+         
         $message = (preg_replace('/([0-9]{2,})([a-z]{2,})/', '$1 $2', $message));
+       
         $message = $this->formatMessage($message);
-        echo $message;       
+        $message = str_replace("n n", "n", $message);
+       // dd($message);       
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
         $amountArr = $channelArr = $betTypeArr = [];    
@@ -127,7 +142,7 @@ class TestController extends Controller
         // nếu tin nhắn ko có đài thì mặc định là dc
         // TH chi co 1
         $betArr = [];
-        //dd($channelArr);
+        
         //echo "<br>";
         if(count($channelArr) > 0){
             foreach($channelArr as $key => $value){           
@@ -144,24 +159,171 @@ class TestController extends Controller
             $betArrDetail[] = $this->parseBetToChannel($arr);
         }
         $betDetail = [];     
-        dd($betArrDetail);
+        dd($message);
+        //dd($betArrDetail);
         foreach($betArrDetail as $k => $betChannelDetail){
-            $tmp2 = $this->parseDetail($betChannelDetail);            
+            $tmp2 = $this->parseDetail($betChannelDetail, $message);            
             $betDetail = array_merge($betDetail, $tmp2);
         }
-        //dd($betDetail);
+       // dd($betDetail);
         $this->insertDB($betDetail, $message_id);
+        Session::forget('arrGiamso');
+        Session::forget('arrSo');
+    }
+    function parseDetail($betArrDetail, $message){  
+         $bettttt = []; 
+        // dd($betArrDetail);
+        foreach($betArrDetail as $channel => $arr){
+            $countII = 0;
+            foreach($arr as $tmp){
+                
+                $channel_bet = $channel;
+                $price = str_replace("n", "", array_pop($tmp)); // lay so tien va xoa luon
+                $price = $price == 0 ? 0.5 : $price;
+                $price = $price == 9991 ? 1.5 : $price;
+                $price = $price == 9992 ? 2.5 : $price;
+                $price = $price == 9993 ? 3.5 : $price;
+                $price = $price == 9994 ? 4.5 : $price;
+                $price = $price == 9995 ? 5.5 : $price;
+                $str = implode(' ', $tmp);
+                $arr_number = [];
+                foreach($tmp as $k1 => $tmp1){                 
+                    if (preg_match('/[a-z*]/', $tmp1, $matches)){                        
+                       $bet_type = $tmp1;        
+                    }
+                    if($tmp1 > 0 || $tmp1 == "00" || $tmp1 == "000" || $tmp1 == "0000"){
+                        $arr_number[] = $tmp1; 
+                    }
+                }
+                if(empty($arr_number) && isset($numberArr)){
+                    $arr_number = $numberArr[$countII-1];
+                }
+                $numberArr[$countII] = $arr_number;
+                //var_dump("<pre>", $numberArr);
+                //dd($arr_number);
+                // truong hop tao lao : loai de nam sau so tien
+                if(!isset($bet_type) && count($arr) == 1){
+                    $tmpMess = explode(" ",$message);
+                    foreach($tmpMess as $tmpValue){
+                        if (preg_match('/^[a-z]+$/i', $tmpValue, $matches)){                        
+                           $bet_type = $tmpValue;
+                           break;        
+                        }
+                    }                  
+                }
+                
+                if(!isset($bet_type) && strlen($arr_number[0]) == 4){
+                    
+                    $bet_type = 'bl';
+                }
+                if($bet_type == 'dv' || $bet_type == 'dxv'){
+                    
+                    $bettttt[] = [
+                        'channel' => $channel_bet,
+                        'bet_type' => $this->formatBetType($bet_type),
+                        'number' => $arr_number,
+                        'price' => $price
+                    ];
+                }elseif($bet_type == 'da' || $bet_type == 'dx'){
+                    
+                    if(count($arr_number)%2==0){
+                        $ii = 0;
+                        $arrNumberNew = [];
+                        foreach($arr_number as $tmpNumber){
+                             $ii++;
+                            $tmpArr[] = $tmpNumber;
+                            if($ii%2 == 0 && $ii > 0){
+                                $arrNumberNew[] = $tmpArr;
+                                $tmpArr = [];
+                            }
+                           
+                        }
+                        if(!empty($arrNumberNew)){
+                            foreach($arrNumberNew as $arrNumber){
+                                $bettttt[] = [
+                                    'channel' => $channel_bet,
+                                    'bet_type' => $this->formatBetType($bet_type),
+                                    'number' => $arrNumber,
+                                    'price' => $price
+                                ]; 
+                            }
+                        }
+                    }else{ // truong hop "da" nhung chi co 3 so vd : da 12 24 23 => dang le la da vong moi dung
+                        
+                        $arrNumberNew = $this->getCapSoDaVong($arr_number);
+                        
+                        if(!empty($arrNumberNew)){
+                            foreach($arrNumberNew as $arrNumber){
+                                $bettttt[] = [
+                                    'channel' => $channel_bet,
+                                    'bet_type' => $this->formatBetType($bet_type),
+                                    'number' => $arrNumber,
+                                    'price' => $price
+                                ]; 
+                            }
+                        }
+                    }
+                    
+
+                   
+                }else{
+                   
+                    if(($bet_type == 'd' && count($arr_number) == 1 && strlen($arr_number[0]) > 2) || $bet_type == 'db'){
+                        $bet_type = 'bd';
+                    }
+                     
+                    foreach($arr_number as $numberBet){
+                        $bettttt[] = [
+                            'channel' => $channel_bet,
+                            'bet_type' => $this->formatBetType($bet_type),
+                            'number' => $numberBet,
+                            'price' => $price
+                        ];
+                    } 
+                }
+                $countII++;          
+            }
+            
+        }
+        return $bettttt;
     }
     function insertDB($betDetail, $message_id){
         //dd($betDetail);        
         foreach($betDetail as $k => $oneBet){  
-                
+            //dd($oneBet);die;
             $bet_type = $oneBet['bet_type'];
-            
+            $arrSo = Session::get('arrSo');
+            if(!isset($arrSo[$oneBet['number']])){
+                $arrSo[$oneBet['number']] = 1;
+            }else{
+                $arrSo[$oneBet['number']] += 1;
+            }
+            echo "<hr>";
+            print_r($arrSo);
+            echo "<hr>";
+            Session::put('arrSo', $arrSo);
             $channelArr = $this->getChannelId($oneBet['channel']);
             $bet_type_id = $this->getBetTypeId($bet_type); 
             //dd($bet_type);
-            if(!in_array($bet_type, ['dv', 'dx', 'dxv', 'da', 'dxc'])){
+            if(!in_array($bet_type, ['dv', 'dx', 'dxv', 'da', 'dxc', 'bd'])){
+                // check truong hop 4 con, 3 con
+                $arrGiamso = [];
+                foreach($betDetail as $k1 => $oneBet1){ 
+                    if($k1 < $k && $oneBet['number'] == $oneBet1['number'] && $oneBet['bet_type'] == $oneBet1['bet_type'] && ((isset($arrSo[$oneBet['number']]) && $arrSo[$oneBet['number']] < 3) || !isset($arrSo[$oneBet['number']]))){
+                        if(strlen($oneBet['number']) == 4){
+                           
+                            $oneBet['number'] = substr($oneBet['number'], 1, 3);
+                            
+                        }elseif(strlen($oneBet['number']) == 3){
+                            
+                            $oneBet['number'] = substr($oneBet['number'], 1, 3);
+                           
+                        }
+                        
+                    }
+                    
+                }
+                Session::put('arrGiamso', $arrGiamso);
                 $this->processNormal($oneBet, $bet_type_id, $channelArr, $message_id);
                 
             }elseif($bet_type == 'da' || $bet_type == 'dx'){ 
@@ -177,10 +339,10 @@ class TestController extends Controller
                         'bet_type_id' => $bet_type_id,
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-                        'number_1' => $oneBet['number'][0],
-                        'number_2' => $oneBet['number'][1],
+                        'number_1' => $this->formatNumber($oneBet['number'][0]),
+                        'number_2' => $this->formatNumber($oneBet['number'][1]),
                         'refer_bet_id' => $countDv1 > 1 ? $refer_bet_id : null,
-                        'total' => $oneBet['price']*72, // 2 dai x 18 lo x 2 so = 72 lo
+                        'total' => $oneBet['price']*36, // 2 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d')
                     ];
@@ -197,6 +359,10 @@ class TestController extends Controller
             elseif($bet_type == 'dxc'){
                 $this->processDxc($oneBet, $bet_type_id, $channelArr, $message_id);
                 
+            }elseif($bet_type == 'bd'){
+              
+                $this->processBaoLoDao($oneBet, $bet_type_id, $channelArr, $message_id);
+                
             }
         }
     }
@@ -205,12 +371,15 @@ class TestController extends Controller
             if(empty($channelArr)){
                 continue;
             }
+            if($bet_type_id == 9 && strlen($oneBet['number']) == 4){
+                $oneBet['number'] = substr($oneBet['number'], 1, 3);
+            }
             $arr = [
                 'channel_id' => $channel_id,
                 'bet_type_id' => $bet_type_id,
                 'message_id' => $message_id,
                 'price' => $oneBet['price'],
-                'number_1' => $oneBet['number'],
+                'number_1' => $this->formatNumber($oneBet['number']),
                 'is_main' => 1,
                 'total' => $this->calTotal($bet_type_id, $oneBet['price'],$oneBet['number']),
                 'bet_day' => date('Y-m-d')                   
@@ -219,9 +388,12 @@ class TestController extends Controller
             Bet::create($arr);
         }
     }
-    function processDxc($oneBet, $bet_type_id, $channelArr, $message_id){
+    function processBaoLoDao($oneBet, $bet_type_id, $channelArr, $message_id){
         //dd($bet_type_id);
         $arrTatCaSo = $this->getTatCaSoDao($oneBet['number']);
+        //dd($arrTatCaSo);
+        $arrTatCaSo = array_unique($arrTatCaSo);
+        
         if(!empty($arrTatCaSo)){
             foreach($arrTatCaSo as $number){
                 foreach($channelArr as $channel_id){                    
@@ -230,10 +402,36 @@ class TestController extends Controller
                     }
                     $arr = [
                         'channel_id' => $channel_id,
-                        'bet_type_id' => $bet_type_id,
+                        'bet_type_id' => 4, // bao lo
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-                        'number_1' =>  $number,
+                        'number_1' =>  $this->formatNumber($number),
+                        'is_main' => 1,
+                        'total' => $this->calTotal($bet_type_id, $oneBet['price'],  $number),
+                        'bet_day' => date('Y-m-d')                   
+                    ];                    
+                   
+                    Bet::create($arr);
+                }
+            }
+        }
+    }
+    function processDxc($oneBet, $bet_type_id, $channelArr, $message_id){
+        //dd($bet_type_id);
+        $arrTatCaSo = $this->getTatCaSoDao($oneBet['number']);
+        $arrTatCaSo = array_unique($arrTatCaSo);
+        if(!empty($arrTatCaSo)){
+            foreach($arrTatCaSo as $number){
+                foreach($channelArr as $channel_id){                    
+                    if(empty($channelArr)){
+                        continue;
+                    }
+                    $arr = [
+                        'channel_id' => $channel_id,
+                        'bet_type_id' => 9, //xiu chu
+                        'message_id' => $message_id,
+                        'price' => $oneBet['price'],
+                        'number_1' =>  $this->formatNumber($number),
                         'is_main' => 1,
                         'total' => $this->calTotal($bet_type_id, $oneBet['price'],  $number),
                         'bet_day' => date('Y-m-d')                   
@@ -266,10 +464,10 @@ class TestController extends Controller
                         'bet_type_id' => $bet_type_id,
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-                        'number_1' => $capSoArr[0],
-                        'number_2' => $capSoArr[1],
+                        'number_1' => $this->formatNumber($capSoArr[0]),
+                        'number_2' => $this->formatNumber($capSoArr[1]),
                         'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
-                        'total' => $oneBet['price']*72, // 2 dai x 18 lo x 2 so = 72 lo
+                        'total' => $oneBet['price']*36, // 1 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d')
                     ];
@@ -304,130 +502,57 @@ class TestController extends Controller
             $firstChar = $string[$i];
             $charsLeft = substr($string, 0, $i) . substr($string, $i + 1);
             $innerPermutations = $this->getTatCaSoDao($charsLeft);
-            for ($j = 0; $j < count($innerPermutations); $j++) {
-            array_push($results, $firstChar . $innerPermutations[$j]);
-            }
-        }
-        return array_unique($results);
-    }
-    function parseDetail($betArrDetail){  
-         $bettttt = []; 
-        // dd($betArrDetail);
-        foreach($betArrDetail as $channel => $arr){
-            $countII = 0;
-            foreach($arr as $tmp){
-                $channel_bet = $channel;
-                $price = str_replace("n", "", array_pop($tmp)); // lay so tien va xoa luon
-                $str = implode(' ', $tmp);
-                $arr_number = [];
-                foreach($tmp as $k1 => $tmp1){                   
-                    if (preg_match('/[a-z*]/', $tmp1, $matches)){                        
-                       $bet_type = $tmp1;        
-                    }
-                    if($tmp1 > 0 || $tmp1 == "00" || $tmp1 == "000" || $tmp1 == "0000"){
-                        $arr_number[] = $tmp1; 
-                    }
-                }
-                if(empty($arr_number)){
-                    $arr_number = $numberArr[$countII-1];
-                }
-                $numberArr[$countII] = $arr_number;   
-
-                //var_dump("<pre>", $numberArr);
-                //dd($arr_number);
-                if($bet_type == 'dv' || $bet_type == 'dxv'){
-                    $bettttt[] = [
-                        'channel' => $channel_bet,
-                        'bet_type' => $this->formatBetType($bet_type),
-                        'number' => $arr_number,
-                        'price' => $price
-                    ];
-                }elseif($bet_type == 'da' || $bet_type == 'dx'){
-                    if(count($arr_number)%2==0){
-                        $ii = 0;
-                        $arrNumberNew = [];
-                        foreach($arr_number as $tmpNumber){
-                             $ii++;
-                            $tmpArr[] = $tmpNumber;
-                            if($ii%2 == 0 && $ii > 0){
-                                $arrNumberNew[] = $tmpArr;
-                                $tmpArr = [];
-                            }
-                           
-                        }
-                        if(!empty($arrNumberNew)){
-                            foreach($arrNumberNew as $arrNumber){
-                                $bettttt[] = [
-                                    'channel' => $channel_bet,
-                                    'bet_type' => $this->formatBetType($bet_type),
-                                    'number' => $arrNumber,
-                                    'price' => $price
-                                ]; 
-                            }
-                        }
-                    }else{ // truong hop "da" nhung chi co 3 so vd : da 12 24 23 => dang le la da vong moi dung
-                        $arrNumberNew = $this->getCapSoDaVong($arr_number);
-                        
-                        if(!empty($arrNumberNew)){
-                            foreach($arrNumberNew as $arrNumber){
-                                $bettttt[] = [
-                                    'channel' => $channel_bet,
-                                    'bet_type' => $this->formatBetType($bet_type),
-                                    'number' => $arrNumber,
-                                    'price' => $price
-                                ]; 
-                            }
-                        }
-                    }
-                    
-
-                   
-                }else{
-                    
-                    foreach($arr_number as $numberBet){
-                        $bettttt[] = [
-                            'channel' => $channel_bet,
-                            'bet_type' => $this->formatBetType($bet_type),
-                            'number' => $numberBet,
-                            'price' => $price
-                        ];
-                    } 
-                }
-                $countII++;          
-            }
             
+            for ($j = 0; $j < count($innerPermutations); $j++) {
+                
+                array_push($results, $firstChar . $innerPermutations[$j]);
+                
+            }
         }
-        return $bettttt;
+        return $results;
     }
-    function parseBetToChannel($arr){       
+
+    function parseBetToChannel($arr){  
+        
         $channel = $arr[0]; // dc, dp, 2d, vl, tp, kg...
        
-        $arrNew = array_slice($arr, 1, count($arr));       
+        $arrNew = array_slice($arr, 1, count($arr));
+        //dd($arrNew);    
         foreach($arrNew as $k => $v){
             
-            $patternAmount = '/[0-9]*[n]/';
-       
+            $patternAmount = '/[0-9]*[n]/';            
             if (preg_match_all($patternAmount, $v, $matches)){
                 $betTypeKey[] = $k;             
             }
         }
-        foreach($betTypeKey as $key => $value){           
+        //echo "<hr><pre>";
+        //print_r($arrNew);
+        foreach($betTypeKey as $key => $value){
+
             $end =  $value+1;
             
             $start = $key > 0 ? $betTypeKey[$key-1]+1 : 0; 
-
+                //var_dump($end, $start);
+               // echo "<hr><pre>";
             $tmp3 = array_slice($arrNew, $start, $end-$start);
+           // dd($tmp3);
             if(!empty($tmp3)){
                 $tmp2[] = $tmp3;
-            }
+            }            
             
-        }
+        }  
         return [$channel => $tmp2];
 
     }
     function formatMessage($message){    
-
+       
+        $message = str_replace("d.phu", "dp", $message);
+        $message = str_replace("D.phu", "dp", $message);
+        $message = str_replace("D.Phu", "dp", $message);
+        $message = str_replace("dbao", "db", $message);
+        $message = str_replace("0.5", "1n", $message);        
         $message = str_replace("...", " ", $message);
+        $message = str_replace(":", " ", $message);
         $message = str_replace("..", " ", $message);
         $message = str_replace(".", " ", $message);
         $message = str_replace(";", " ", $message);
@@ -446,16 +571,25 @@ class TestController extends Controller
        
         $message = str_slug($message, " ");
         $message = strtolower($message);
+        
+        $message = str_replace("lay tin nay", "", $message);
+        $message = str_replace("bd", "db", $message);
+        $message = str_replace("daoxc", "dxc", $message);
+        $message = str_replace("bdao", "db", $message);        
+        $message = str_replace("xdao", "dxc", $message);
+        $message = str_replace("xd", "dxc", $message);
+        $message = str_replace("chanh", "dc", $message);
+        $message = str_replace("dacap", "da", $message);
+        $message = str_replace("da vong", "dv", $message);
         $message = str_replace("2 đài", "2d", $message);
         $message = str_replace("2 dai", "2d", $message);
         $message = str_replace("2dai", "2d", $message);
-        $message = str_replace("phu", "dp", $message);
+        $message = str_replace("phu", "dp", $message);        
         $message = str_replace("fu", "dp", $message);
-        $message = str_replace("ch", "dc", $message);       
+        $message = str_replace("ch", "dc", $message);    
+            
         $message = str_replace("dav", "dv", $message);
-        $message = str_replace("dacap", "da", $message);
-        $message = str_replace("da vong", "dv", $message);
-        $message = str_replace("dav", "dv", $message);
+        
         
         return $message;
     }
@@ -484,8 +618,23 @@ class TestController extends Controller
         return in_array($value, $this->betTypeList);
     }
     function getBetTypeId($bet_type){  
-        //var_dump("<br>Kiểu đánh : ", $bet_type);        
-        return $bet_type_id = BetType::where('keyword', $bet_type)->first()->id;    
+        var_dump("<hr>", $bet_type);
+        $rs  = BetType::where('keyword', $bet_type)->first();
+        if($rs){
+           return $rs->id;
+        }else{
+            $bet_type = (preg_replace('/([0-9]*)([a-z])/', '$2', $bet_type));
+            $bet_type = $this->formatBetType($bet_type);
+            $rs  = BetType::where('keyword', $bet_type)->first();
+            if($rs){
+               return $rs->id;
+            }else{
+                dd("11111", $bet_type);
+            }
+        }
+    }
+    function formatNumber($number){
+        return $number = (preg_replace('/([0-9]*)([a-z])/', '$1', $number));
     }
     function getChannelId($channel = ''){
         $channelSelected = [];
@@ -519,7 +668,7 @@ class TestController extends Controller
     }
     function calTotal($bet_type_id, $price, $number){
         $length = strlen($number);
-        //var_dump($bet_type_id);
+      
         switch ($bet_type_id) {
             case 9: // xiu, xiu chu 2 lô;
                 $total = $price*2;
@@ -548,9 +697,25 @@ class TestController extends Controller
                 }
                 
                 break;    
+            case 13: // bao lo
+                
+                if($length == 3){
+                    $total = $price*17;    
+                }
+                if($length == 4){
+                    $total = $price*16;    
+                }
+                
+                break;
             default:
+                dd($bet_type_id);
                 # code...
                 break;
+        }
+        
+        var_dump($number);
+        if(!isset($total)){
+            dd($bet_type_id);
         }
         return $total;
     }
