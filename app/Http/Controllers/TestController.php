@@ -71,6 +71,7 @@ class TestController extends Controller
         $this->betTypeList = BetType::pluck('keyword', 'id')->toArray();   
         $this->betTypeListKey = array_flip($this->betTypeList);    
     }
+    //preg_replace('/([ .])(\d)(\.5)([a-z])/', '${1}999n${4}', $input_lines);
     public function messagesList(){
         $user = Auth::user();
         $tel_id = $user->tel_id;
@@ -97,7 +98,7 @@ class TestController extends Controller
         
         #17, 19, 20, 21, 23, 25,30, 37, 38, 39, 46,47, 49 (038.336.259.b2nxx8n), 52
         
-        $message = "Chanh 951.915. xc10n. T17";
+        $message = "Dc 483.753.1nb10nx.2nxdao .79.39.da1n. 53.86.da1n. 63.10.da1n. 83.86.da1n. T19";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";
@@ -105,20 +106,23 @@ class TestController extends Controller
         // 500 dong
         $message = preg_replace('/(05)(\s)(db)/', '9990ndb', $message);
         $message = preg_replace('/(05)(\s)(bl)/', '9990ndb', $message);
-        dd($message);
+        $message = preg_replace('/(05)([a-z*])/', '9990n${2}', $message);
+        //dd($message);
         // end 500 dong
-        $message = (preg_replace('/([\s|\.])([0-9,{1}])(.)([5])([a-z]*)/', ' 999$2n$5', $message));
-        dd($message);
+        //$message = (preg_replace('/([ .])(\d)(\.5)([a-z*])/', ' 999${2}n${4}', $message));
+        $message = (preg_replace('/([a-z*])(\d)(\.5)([ .])/', '${1}999${2}n${4}', $message));
+        //dd($message);
         $message = (preg_replace('/([t])([0-9,{1,}])/', ' ', $message));
         //$message = preg_replace('/([a-zA-Z,{1,}])([0-9,{1,}])([\.\s])/', ' $1$2n ', $message); T21
         //dd($message); 
+
         $message = $this->formatMessage($message);    
-    
-        $message = preg_replace('/([a-z]*)([0-9,{1,}]*)([n])/', ' $1$2$3', $message);   
+   
+        //$message = preg_replace('/([a-z]*)([0-9,{1,}]*)([n])/', ' $1$2$3', $message);   
         
 
         $message = preg_replace('/([0-9,{1,}]*)([n])([a-z]*)/', ' $3$1$2 ', $message);
-
+ //dd($message); 
         $message = preg_replace('/([0-9]*)([n])/', ' $1$2 ', $message);
         
          
@@ -126,7 +130,7 @@ class TestController extends Controller
        
         $message = $this->formatMessage($message);
         $message = str_replace("n n", "n", $message);
-       // dd($message);       
+        //dd($message);       
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
         $amountArr = $channelArr = $betTypeArr = [];    
@@ -159,7 +163,7 @@ class TestController extends Controller
             $betArrDetail[] = $this->parseBetToChannel($arr);
         }
         $betDetail = [];     
-        dd($message);
+       // dd($message);
         //dd($betArrDetail);
         foreach($betArrDetail as $k => $betChannelDetail){
             $tmp2 = $this->parseDetail($betChannelDetail, $message);            
@@ -167,7 +171,7 @@ class TestController extends Controller
         }
        // dd($betDetail);
         $this->insertDB($betDetail, $message_id);
-        Session::forget('arrGiamso');
+        
         Session::forget('arrSo');
     }
     function parseDetail($betArrDetail, $message){  
@@ -215,6 +219,9 @@ class TestController extends Controller
                 if(!isset($bet_type) && strlen($arr_number[0]) == 4){
                     
                     $bet_type = 'bl';
+                }
+                if(!isset($bet_type)){
+                    dd($arr_number);
                 }
                 if($bet_type == 'dv' || $bet_type == 'dxv'){
                     
@@ -293,7 +300,7 @@ class TestController extends Controller
             //dd($oneBet);die;
             $bet_type = $oneBet['bet_type'];
             $arrSo = Session::get('arrSo');
-            if(!isset($arrSo[$oneBet['number']])){
+            if(!isset($arrSo[$oneBet['number']]) || empty($arrSo)){
                 $arrSo[$oneBet['number']] = 1;
             }else{
                 $arrSo[$oneBet['number']] += 1;
