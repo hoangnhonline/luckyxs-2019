@@ -37,6 +37,8 @@ class Bet extends Model  {
         'result',
         'win',
         'is_main',
+        'str_channel',
+        'str_number',
         'bet_day',
         'status',
         'created_at',
@@ -49,5 +51,9 @@ class Bet extends Model  {
     public function channel()
     {
         return $this->belongsTo('App\Models\Channel', 'channel_id');
-    }  
+    }
+    public function calTotal($id)
+    {
+        return Bet::where('id', $id)->orWhere('refer_bet_id', $id)->sum('total');
+    } 
 }

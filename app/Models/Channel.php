@@ -24,4 +24,19 @@ class Channel extends Model  {
      * @var array
      */
     protected $fillable = ['code', 'name', 'display_order'];
+
+    public static function getChannelName($channelArr)
+    {
+        $count = 0;
+        $str = "";
+        foreach($channelArr as $channelId){
+            $str.=Channel::find($channelId)->code;
+            if($count==0 && count($channelArr)==2){
+                $str.="-";
+            }
+            $count++;
+        }
+
+        return strtoupper($str);
+    }
 }

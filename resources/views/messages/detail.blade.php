@@ -37,38 +37,55 @@
               $i = 0;
               @endphp
               @if($betList->count() > 0)
+              @php $total = 0; @endphp
               @foreach($betList as $bet)
               @php 
               $i++;
               @endphp
               <tr>
                 <td class="font-weight-medium">
-                  {{ $i }}
+                  {{ $bet->id }}
                 </td>
                 <td>
-                	<span style="text-transform: uppercase;">{{ $bet->channel->code }}</span>
+                	<span style="text-transform: uppercase;">{{ $bet->str_channel }}</span>
+                </td>
+                <td>                                 
+                 	{{ $bet->betType->content }}                  
                 </td>
                 <td>
-                 	{{ $bet->betType->content }}
-                </td>
-                <td>
-                	{{ $bet->number_1 }}
-                	@if($bet->number_2)
-                	-{{ $bet->number_2 }}
-                	@endif
+                  @if($bet->str_number)
+                  {{ $bet->str_number }}
+                  @else                  
+                  {{ $bet->number_1 }}
+                  @if($bet->number_2)
+                  -{{ $bet->number_2 }}
+                  @endif
+                  @endif
+                	                
                 </td>
                 <td align="right">
                 	{{ $bet->price }}
                 </td>
                 <td align="right">
-                	{{ $bet->total }}
+                  <?php 
+                  $total += $totalRow = $bet->calTotal($bet->id);
+                  //$total += $bet->total;
+                  ?>
+                	<!-- {{ number_format($bet->total) }} -->
+                  {{ number_format($totalRow) }}
                 </td>
                 <td align="right">
                 	
                 </td>                
               </tr>
               @endforeach
+              <tr>
+                <td colspan="7" style="text-align: right;">
+                  {{ number_format($total) }}
+                </td>
+              </tr>
               @endif
+
             </tbody>
           </table>
         </div>
@@ -76,4 +93,13 @@
     </div>
   </div>
 </div> 
+@stop
+@section('js')
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('table tr').click(function(){
+      $(this).remove();
+    });
+  });
+</script>
 @stop
