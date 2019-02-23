@@ -72,7 +72,7 @@
                   //$total += $bet->total;
                   ?>
                 	<!-- {{ number_format($bet->total) }} -->
-                  {{ number_format($totalRow) }}
+                  {{ str_replace('.0', '', number_format($totalRow, 1)) }}
                 </td>
                 <td align="right">
                 	
@@ -80,9 +80,10 @@
               </tr>
               @endforeach
               <tr>
-                <td colspan="7" style="text-align: right;">
-                  {{ number_format($total) }}
+                <td colspan="6" style="text-align: right;">
+                  <h1>{{ str_replace('.0', '', number_format($total, 1)) }}</h1>
                 </td>
+                <td></td>
               </tr>
               @endif
 

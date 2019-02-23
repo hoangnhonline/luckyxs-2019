@@ -96,15 +96,17 @@ class TestController extends Controller
     public function index()
     {        
         //$message = "00.01.03.04.05.06.07.08.09.20.dd da300n,dp t3";
-        Session::forget('arrSo');
-        
-        #46, 49, 52
-        
-        //$message = "2đ: 3752.3356 b2 b1 b1 x3 đ.x1. 668 đ.b1. 943 b1 x3. 96.33 b2,5. 019 x15. Dc:39.79.38.78 b2. 37.73 b1. 34 b2,5. 634 đ.b0,5. 6635.6131 b1. 723 b1 x10. 3447 b2 b1 x10. D.phu:38 b50. T25";
-        //$message = "dc 1668 b7 b1 b1 x3 đ.x21 ";
-        //$message = "2đ:713.013.299.239.071.075.621.731.371.256.311.133.304 x5. 0831.4999.0439.2913 b2 b2 x10 dd10 đáv x1. 571.035.675.021.756.033.711.804 x5 dd5. 1668 b7 b1 b1 x3 đ.x2. 668 đ.b1.  D.phu:1668 b25.   T11";
-        $message = "2d . 2767b5nxc20n .9377b2n db02 .2019b2n.b1n. 530.570.b0.5xc5n. Chanh . 2018.6232.b2n.b1n, 1115 db1n. 1119.2228 db0.5. Phu . 1317.b1n.b1nxc4n, 5959b2n.b2nxc8n. 559.379b2nxc8n. 234b2nxc10n, 739.726.b5nxc10n, T4";
-        
+        Session::forget('arrSo');        
+        #46, 49, 52        
+     
+        //$message = "2d . 1367b1n.b1nxc10n. 309.468.491.xc5n .066b2nxc50n, 3868b3n.b5n. 6464.4397.1456.b1n.b2nxc10n. 615xc50n .283b5nxc20n .583 db1n .  Chanh . 9455 b10n.b10nxc100n . 915.559.551. B1n. 5832.2018.b2n.b1n, 1915.4559.8551.b2n db02.  Phu . 2019.b2n.b1n, 1519.b1n db02 . 8551b2n db02 .519b1n . 551b1n.   T15"; // so cuoi cung bi loi
+        $message = "Dc bl 499 815 974 1n 
+xc 815 50n 822 30n 974 20n 972 375 721 10n dx 974 10n 
+bl 75 15n 20 10n dd 74 55 20n 
+2d xc 038 127 20n 228 913 935 735 10n dx 929 5n 
+dd 64 20n 
+da 14.54-94.14-54.94-06.46-86.06-46.86-18.58-98.18-58.98-69.74-1n
+T3";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";
@@ -113,8 +115,24 @@ class TestController extends Controller
         ////$message = preg_replace('/([0-9]+)([a-z^n]+)/','${1}${2} ', $message);//2326b 
         //dd($message);
         $message = preg_replace('/[ ]+/', '.', $message);
+        $message = preg_replace('/[+]+/', '.', $message);
         $message = preg_replace('/[.]+/', '.', $message);
-        $message = str_replace(".b05.", '.b9990n.', $message);     
+        $message = preg_replace('/([0-9]+)m/', '${1}n', $message);
+        $message = str_replace("xc", "x", $message);
+        //dd($message);
+        $message = preg_replace('/đáx([0-9]+)(.)/', 'dx${1}n${2}', $message);
+        //dd($message);
+        $message = str_replace(".b05.", '.b9990n.', $message);
+        $message = str_replace("bd0.5", '.db9990n.', $message);
+        
+        $message = str_replace("b0,5", '.b9990n.', $message);
+        
+        $message = str_replace(".b0.5", '.b9990n', $message);
+        $message = str_replace("xc.đảo", 'dxc', $message);
+        $message = str_replace('đáv.x', 'dxv', $message);
+        $message = str_replace('dav.x', 'dxv', $message);
+        $message = str_replace('dáv.x', 'dxv', $message);
+
         $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);//.dd5.
         $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);//.dd5.
         //dd($message);
@@ -130,9 +148,14 @@ class TestController extends Controller
         $message = str_replace("1,5", '1.5', $message);
         $message = str_replace("2,5", '2.5', $message);
         $message = str_replace("3,5", '3.5', $message);
-        $message = str_replace('đá', 'da', $message);               
-        // end 500 dong    
-        //dd($message);     
+        $message = str_replace('đá', 'da', $message);   
+        $message = str_replace('', 'dxc', $message);
+        $message = preg_replace('/đ.x([0-9]+)/', 'dxc${1}', $message);
+        $message = preg_replace('/d.x([0-9]+)/', 'dxc${1}', $message);
+        $message = preg_replace('/dx([0-9]+)/', 'dxc${1}', $message);
+        $message = str_replace('xx', 'x', $message);       
+                    
+        // end 500 dong            
         $message = (preg_replace('/([ .])([abcdefghijklmopqrstuvwxyz]+)(\d)(\.5)([ .])/',
          ' ${1}${2}999${3}n${5}', $message));  // b2.5.
         $message = (preg_replace('/([abcdefghijklmopqrstuvwxyz]+)(\d)(\.5)([abcdefghijklmopqrstuvwxyz]+)/',
@@ -144,12 +167,8 @@ class TestController extends Controller
         //dd($message); 
         //$message = (preg_replace('/([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([ .])/', '${1} ${2}n ', $message));
         
-        $message = str_replace('đ.x', 'dxc', $message);
-        $message = str_replace('xx', 'x', $message);
-        $message = str_replace('d.x', 'dxc', $message);
-        $message = str_replace('đáv x', 'dxv', $message);
-        $message = str_replace('dav x', 'dxv', $message);
-        $message = str_replace('dáv x', 'dxv', $message);            
+        
+                    
         $message = (preg_replace('/([tT])([0-9]+)/', ' ', $message));
         //dd($message);
        
@@ -177,7 +196,7 @@ class TestController extends Controller
         //dd($message); 
         $message = $this->formatMessage($message);
         $message = str_replace("n n", "n", $message);        
-        echo ($message);    
+        echo ($message);   
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
         $amountArr = $channelArr = $betTypeArr = [];    
@@ -369,10 +388,7 @@ class TestController extends Controller
             }catch(\Exception $ex){
                 dd($oneBet['number']);
             }           
-            Session::put('arrSo', $arrSo);
-            echo "<pre>";
-            var_dump("arrSo", $arrSo);
-            echo "</pre>";
+            Session::put('arrSo', $arrSo);            
             $channelArr = $this->getChannelId($oneBet['channel']);
             $bet_type_id = $this->getBetTypeId($bet_type); 
             //dd($bet_type);
@@ -406,9 +422,7 @@ class TestController extends Controller
                                     if($keyCacheSession == 'dp-0704'){
                                       // dd(2, $oneBet, $bet_type);
                                     }
-                                    //dd($oneBet);
-                                    echo "<pre>aaaaaaa";
-                                    var_dump($oneBet);
+                                    //dd($oneBet);                                    
                                     //$oneBet['number'] = substr($oneBet['number'], -3);    
                                     if($bet_type == 'x' || $bet_type == 'bl'){
                                         $oneBet['number'] = substr($oneBet['number'], -3);
