@@ -100,8 +100,17 @@ class TestController extends Controller
         #46, 49, 52        
      
         //$message = "2d . 1367b1n.b1nxc10n. 309.468.491.xc5n .066b2nxc50n, 3868b3n.b5n. 6464.4397.1456.b1n.b2nxc10n. 615xc50n .283b5nxc20n .583 db1n .  Chanh . 9455 b10n.b10nxc100n . 915.559.551. B1n. 5832.2018.b2n.b1n, 1915.4559.8551.b2n db02.  Phu . 2019.b2n.b1n, 1519.b1n db02 . 8551b2n db02 .519b1n . 551b1n.   T15"; // so cuoi cung bi loi
-        $message = "2đ:713.013.299.239.071.075.621.731.371.256.311.133.304 x5. 0831.4999.0439.2913 b2 b2 x10 dd10 đáv x1. 571.035.675.021.756.033.711.804 x5 dd5. 1668 b7 b1 b1 x3 đ.x2. 668 đ.b1.  D.phu:1668 b25.   T11
-";
+        $message = "Ch 507.8n.x300n 
+263x200n 932x30n 133x20n 322.623.632.100.822.941x10n 732xd10n 
+32b10n.dd30n 
+05.k.95 06.k.96.dau.10n 07.k.97 08.k.98. 09.k.89.dau.110n (29con)
+2dai 1032.3n.x.10n 7259.2n 194.b.3n
+789.879.632.655.566x10n 968.965.913.619.476.218.570.230.959.653.954x5n 
+79.32da50n 66.36.52dv2n 
+Phu 2938.1n 772.8n.xd200n 932x20n 938x10n 
+32dd20n
+00.k.09 20.k.29.duoi.10n 40.k.49. 60.k.69. 80.k.89.duoi.110n (30con)
+T2";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";
@@ -160,6 +169,16 @@ class TestController extends Controller
         $message = preg_replace('/[+]+/', '.', $message);
         $message = preg_replace('/[.]+/', '.', $message);
         $message = preg_replace('/([0-9]+)m/', '${1}n', $message);
+        $message = str_replace("kéo", 'k', $message);
+        $message = str_replace("keo", 'k', $message);
+        //(29con) (50con)
+        $message = preg_replace('/([0-9]+)con/', '', $message);
+        //dd($message);
+        $message = preg_replace('/([0-9]+)([k])([0-9]+)/', '${1} ${2} ${3} ', $message);
+        //dd($message);
+        //073b10xc
+        $message = preg_replace('/([0-9,{3,}])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([abcdefghijklmopqrstuvwxyz]+)/', '${1}${2}${3}n${4}', $message);
+
         //.1n5.
         $message = preg_replace('/([0-9,{1}])([n])([5])/', '999${1}n', $message);
         //6599.1n.
@@ -167,11 +186,33 @@ class TestController extends Controller
         //dd($message);
         //dd($message);
         //Phu 2017.05
-        $message = preg_replace('/([0-9,{3,}]+).05/', '${1}bl9990n', $message);
+        $message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz.]+)/', '${1}bl9990n${2}', $message);
+        $message = str_replace("daoxc", "dxc", $message);
+
         $message = str_replace("xc", "x", $message);
-        //dd($message);
+        $message = preg_replace('/đ.x([0-9]+)/', 'dxc${1}', $message);
+        $message = preg_replace('/d.x([0-9]+)/', 'dxc${1}', $message);
+        
+        $message = preg_replace('/dx([0-9]+)/', 'dxc${1}', $message);
+        $message = str_replace("đáx0,5.", 'dx9990n.', $message);
+        
         $message = preg_replace('/đáx([0-9]+)(.)/', 'dx${1}n${2}', $message);
+        $message = preg_replace('/đá([0-9]+)(.)/', 'da${1}n${2}', $message);
         //dd($message);
+        
+        //db0.25
+        $message = str_replace("db0.25", 'db999025n', $message);
+        //daoxc2.5.
+        
+        $message = str_replace("dxc2.5.", 'dxc9992n.', $message);
+        //dd($message);
+        //db0.5.
+        $message = str_replace("db0.5.", 'db9990n.', $message);
+        $message = str_replace("xcđao", 'dxc', $message);
+        
+
+        $message = str_replace("đ.b0,5.", 'db9990n.', $message);
+
         $message = str_replace(".b05.", '.b9990n.', $message);
         $message = str_replace("bd0.5", '.db9990n.', $message);
         
@@ -187,6 +228,11 @@ class TestController extends Controller
         $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);//.dd5.
         $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);//.dd5.
         //dd($message);
+        //10n 7259.2n
+        
+        //$message = preg_replace('/([0-9]+)n.([0-9,{4}]+).([0-9]+)n./', '${1}n.${2}.b${3}n.', $message);
+        //dd($message);
+        //.dd5.
         $message = preg_replace('/(05)(\s)(db)/', '9990ndb', $message);
         $message = preg_replace('/(05)(\s)(bl)/', '9990ndb', $message);
         $message = preg_replace('/(05)([a-z]+)/', '9990n${2}', $message);
@@ -201,9 +247,7 @@ class TestController extends Controller
         $message = str_replace("3,5", '3.5', $message);
         $message = str_replace('đá', 'da', $message);   
         $message = str_replace('', 'dxc', $message);
-        $message = preg_replace('/đ.x([0-9]+)/', 'dxc${1}', $message);
-        $message = preg_replace('/d.x([0-9]+)/', 'dxc${1}', $message);
-        $message = preg_replace('/dx([0-9]+)/', 'dxc${1}', $message);
+
         $message = str_replace('xx', 'x', $message);       
                     
         // end 500 dong            
@@ -250,12 +294,14 @@ class TestController extends Controller
         // dd($betArrDetail);
         foreach($betArrDetail as $channel => $arr){
             $countII = 0;
+
             foreach($arr as $tmp){
                 
                 $channel_bet = $channel;
                 $price = str_replace("n", "", array_pop($tmp)); // lay so tien va xoa luon
                 $price = $price == 0 ? 0.5 : $price;
                 $price = $price == 99902 ? 0.2 : $price;
+                $price = $price == 999025 ? 0.25 : $price;
                 $price = $price == 9990 ? 0.5 : $price;
                 $price = $price == 9991 ? 1.5 : $price;
                 $price = $price == 9992 ? 2.5 : $price;
@@ -323,10 +369,11 @@ class TestController extends Controller
                         }                        
                     }
                 }
-                // end xu ly keo
+                // end xu ly keo 
+                $bet_type = null;              
                 foreach($tmp as $k1 => $tmp1){                 
                     if (preg_match('/[a-z*]/', $tmp1, $matches)){                        
-                       $bet_type = $tmp1;        
+                       $bet_type = $tmp1;    
                     }
                     if($is_keo == 0){
                         if($tmp1 > 0 || $tmp1 == "00" || $tmp1 == "000" || $tmp1 == "0000"){
@@ -338,13 +385,12 @@ class TestController extends Controller
                 if(empty($arr_number) && isset($numberArr)){
                     $arr_number = $numberArr[$countII-1];
                 }
-                $numberArr[$countII] = $arr_number;
-
+                $numberArr[$countII] = $arr_number;                
                 
                 //var_dump("<pre>", $numberArr);
                 //dd($arr_number);
                 // truong hop tao lao : loai de nam sau so tien
-                if(!isset($bet_type) && count($arr) == 1){
+                if(!$bet_type && count($arr) == 1){
                     $tmpMess = explode(" ",$message);
                     foreach($tmpMess as $tmpValue){
                         if (preg_match('/^[a-z]+$/i', $tmpValue, $matches)){                        
@@ -354,10 +400,12 @@ class TestController extends Controller
                     }                  
                 }
                 //dd($arr_number[0]);
-                if(!isset($bet_type) && strlen($arr_number[0]) == 4){                    
-                    $bet_type = 'bl';
+               
+                
+                if(!$bet_type && strlen($arr_number[0]) >= 3 ){                    
+                    $bet_type = 'bl';                    
                 }
-                if(!isset($bet_type)){
+                if(!$bet_type){
                     dd($arr_number);
                 }
                 if($bet_type == 'dx' && strlen($arr_number[0]) == 3){
@@ -419,7 +467,7 @@ class TestController extends Controller
 
                    
                 }else{
-                   
+
                     if(($bet_type == 'd' && count($arr_number) == 1 && strlen($arr_number[0]) > 2) || $bet_type == 'db'){
                         $bet_type = 'bd';
                     }
@@ -508,7 +556,7 @@ class TestController extends Controller
                                     } 
                                 }elseif($arrSo[$keyCacheSession] == 3){   
 
-                                    if($bet_type == 'x' || $bet_type == 'bl'){
+                                    if($bet_type == 'x'){
                                         $oneBet['number'] = substr($oneBet['number'], -3);        
                                     }else{
                                         $oneBet['number'] = substr($oneBet['number'], -2);
@@ -517,7 +565,7 @@ class TestController extends Controller
                                 
                             }elseif(strlen($oneBet['number']) == 3 ){
                                
-                                if($arrSo[$keyCacheSession] > 1){
+                                if($arrSo[$keyCacheSession] > 1 && $bet_type != 'x'){
                                    $oneBet['number'] = substr($oneBet['number'], -2);
                                 }
                                 
@@ -683,6 +731,13 @@ class TestController extends Controller
             }
         }
     }
+    function formatSoDa($arr){
+        $arr2 = [];
+        foreach($arr as $tmp){
+            $arr2[]= substr($tmp, -2);
+        }
+        return $arr2;
+    }
     function processDvDxv($oneBet, $bet_type_id, $channelArr, $message_id){        
         if(count($oneBet['number']) == 1){
             for($i = 0; $i < strlen($oneBet['number'][0]); $i++){
@@ -694,12 +749,15 @@ class TestController extends Controller
         }        
         $arrCapSoDaVong = $this->getCapSoDaVong($oneBet['number']);
 
-        
+      //  dd($arrCapSoDaVong);
         if(!empty($arrCapSoDaVong)){
+           
+            $oneBet['number']= $this->formatSoDa($oneBet['number']);
             $str_number = implode('-', $oneBet['number']);
             $str_channel = Channel::getChannelName($channelArr);
             $countDv = 0;
             $refer_bet_id = null;
+           // dd($arrCapSoDaVong);
             foreach($arrCapSoDaVong as $capSoArr){
                 foreach($channelArr as $channel_id){
                     $countDv++;
