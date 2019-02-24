@@ -95,66 +95,69 @@ class TestController extends Controller
     }
     public function index()
     {        
-        $message_origin = "2d.0584.1746.1647.1n T1";
+        $message = "2d.0584.1746.1647.1n T1";
         Session::forget('arrSo');        
         #46, 49, 52
        
         //$message = "Dc bd.8998 10n b.1972 2n 392 4n 258 3n 897 475 223 815 1n xc 938 183 45n 392 40n 223 968 35n";
         $userDetail = Auth::user();
-        $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message_origin])->id;
-        echo "<h3>".$message_origin."</h3>";
-        //$message = "T6.hn 77;88;99 đa vòng 15n";
-        // 500 dong
-        ////$message = preg_replace('/([0-9]+)([a-z^n]+)/','${1}${2} ', $message);//2326b 
+        $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
+        echo "<h3>".$message."</h3>";        
         try{
-            $message = $this->regMess($message_origin); 
-         
-            //dd('111');
-            $tmpArr = explode(" ", $message);
-            $countAmount = $countChannel = $countBetType = 0;
-            $amountArr = $channelArr = $betTypeArr = [];    
-            
-            foreach($tmpArr as $k => $value){
-                
-                if($this->isChannel($value)){
-                    $countChannel++;
-                    $channelArr[] = $k;
-                }
-
-            }
-            // nếu tin nhắn ko có đài thì mặc định là dc
-            // TH chi co 1
-            $betArr = [];        
-            //echo "<br>";
-            if(count($channelArr) > 0){
-                foreach($channelArr as $key => $value){           
-                    $position =   isset($channelArr[$key+1]) ? $channelArr[$key+1] : count($tmpArr);
-                    $start = $key > 0 ? $value : 0;
-                    $betArr[] = array_slice($tmpArr, $start, $position-$start);
-                    
-                }
-            }else{
-                $betArr[] = $tmpArr;
-            }   
-            //dd($betArr);
-            foreach($betArr as $arr){
-                $betArrDetail[] = $this->parseBetToChannel($arr);
-            }
-            $betDetail = [];     
-            //dd($message);
-            //dd($betArrDetail);
-            foreach($betArrDetail as $k => $betChannelDetail){
-                $tmp2 = $this->parseDetail($betChannelDetail, $message);            
-                $betDetail = array_merge($betDetail, $tmp2);
-            }
-            //dd($betDetail);
-            $this->insertDB($betDetail, $message_id);
-            echo "OK: ".$message; 
+            $mess = $this->processMessage($message, $message_id);
+               
         }catch(\Exception $ex){
-            echo ('Tin ko hieu: '.$message_origin);
-            //dd($ex->getMessage());
-        }
+           echo ("Tin ko hieu: ".$message);
+           exit;
+        }   
+        echo ('OK: ' . $mess);
+         
           
+    }
+    function processMessage($message, $message_id){     
+        $message = $this->regMess($message); 
+         
+        //dd('111');
+        $tmpArr = explode(" ", $message);
+        $countAmount = $countChannel = $countBetType = 0;
+        $amountArr = $channelArr = $betTypeArr = [];    
+        
+        foreach($tmpArr as $k => $value){
+            
+            if($this->isChannel($value)){
+                $countChannel++;
+                $channelArr[] = $k;
+            }
+
+        }
+        // nếu tin nhắn ko có đài thì mặc định là dc
+        // TH chi co 1
+        $betArr = [];        
+        //echo "<br>";
+        if(count($channelArr) > 0){
+            foreach($channelArr as $key => $value){           
+                $position =   isset($channelArr[$key+1]) ? $channelArr[$key+1] : count($tmpArr);
+                $start = $key > 0 ? $value : 0;
+                $betArr[] = array_slice($tmpArr, $start, $position-$start);
+                
+            }
+        }else{
+            $betArr[] = $tmpArr;
+        }   
+        //dd($betArr);
+        foreach($betArr as $arr){
+            $betArrDetail[] = $this->parseBetToChannel($arr);
+        }
+        $betDetail = [];     
+        //dd($message);
+        //dd($betArrDetail);
+        foreach($betArrDetail as $k => $betChannelDetail){
+            $tmp2 = $this->parseDetail($betChannelDetail, $message);            
+            $betDetail = array_merge($betDetail, $tmp2);
+        }
+        //dd($betDetail);
+        $this->insertDB($betDetail, $message_id);
+        return $message;
     }
     function regMess($message){
         $message = preg_replace('/[ ]+/', '.', $message);

@@ -110,13 +110,14 @@ class TelegramController extends Controller
             }catch(\Exception $ex){
                 $bot->reply("Tin ko hieu: ".$message);
             }	
-            $bot->reply('OK: ' . $mess);		
+            $bot->reply('OK: ' . $mess);
+
 		});
 		// Start listening
 		$botman->listen();
     }
     function processMessage($message, $message_id){    	
-        $message = $this->regMess($message_origin); 
+        $message = $this->regMess($message); 
          
         //dd('111');
         $tmpArr = explode(" ", $message);
