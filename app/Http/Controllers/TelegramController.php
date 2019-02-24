@@ -99,20 +99,15 @@ class TelegramController extends Controller
 				$user->tel_id   = $userId;
 				$user->save();
 			}
-			
-			$bot->reply('OK: ' . $message);
 
 			$message_id = Message::create(['tel_id' => $userId, 'content' => $message]);			
 			
             try{
                 $mess = $this->processMessage($message, $message_id);
-                
+                $bot->reply('OK: ' . $mess);
             }catch(\Exception $ex){
                 $bot->reply("Tin ko hieu: ".$message);
-            }	
-            if(isset($mess) && $mess != ''){
-                $bot->reply('OK: ' . $mess);
-            }            
+            }	 
 
 		});
 		// Start listening
