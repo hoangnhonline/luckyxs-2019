@@ -109,6 +109,7 @@ class TelegramController extends Controller
                 
             }catch(\Exception $ex){
                 $bot->reply("Tin ko hieu: ".$message);
+                exit;
             }	
             $bot->reply('OK: ' . $mess);
 
