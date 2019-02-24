@@ -157,7 +157,7 @@ class TelegramController extends Controller
         }
         //dd($betDetail);
         $this->insertDB($betDetail, $message_id);
-        return "OK: ".$message;
+        return $message;
     }
     function regMess($message){
         $message = preg_replace('/[ ]+/', '.', $message);
