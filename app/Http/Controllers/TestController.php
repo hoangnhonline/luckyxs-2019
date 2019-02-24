@@ -95,73 +95,66 @@ class TestController extends Controller
     }
     public function index()
     {        
-        //$message = "00.01.03.04.05.06.07.08.09.20.dd da300n,dp t3";
+        $message_origin = "TIỀN GIANG - Đầu - chẵn (00-98, 50con) 3n, Nhỏ (00-49, 50con) 25n. Đuôi - chẵn (00-98, 50con) 3n, nhỏ (00-49, 50con) 3n. KIÊN GIANG - đầu- chẵn (00-98, 50con) 10n, nhỏ (00-49, 50con) 3n. ĐUÔI - lẻ (01-99, 50con) 25n, nhỏ (00-49, 50con) 3n.   T19
+";
         Session::forget('arrSo');        
-        #46, 49, 52        
-     
-        //$message = "2d . 1367b1n.b1nxc10n. 309.468.491.xc5n .066b2nxc50n, 3868b3n.b5n. 6464.4397.1456.b1n.b2nxc10n. 615xc50n .283b5nxc20n .583 db1n .  Chanh . 9455 b10n.b10nxc100n . 915.559.551. B1n. 5832.2018.b2n.b1n, 1915.4559.8551.b2n db02.  Phu . 2019.b2n.b1n, 1519.b1n db02 . 8551b2n db02 .519b1n . 551b1n.   T15"; // so cuoi cung bi loi
-        $message = "Ch 507.8n.x300n 
-263x200n 932x30n 133x20n 322.623.632.100.822.941x10n 732xd10n 
-32b10n.dd30n 
-05.k.95 06.k.96.dau.10n 07.k.97 08.k.98. 09.k.89.dau.110n (29con)
-2dai 1032.3n.x.10n 7259.2n 194.b.3n
-789.879.632.655.566x10n 968.965.913.619.476.218.570.230.959.653.954x5n 
-79.32da50n 66.36.52dv2n 
-Phu 2938.1n 772.8n.xd200n 932x20n 938x10n 
-32dd20n
-00.k.09 20.k.29.duoi.10n 40.k.49. 60.k.69. 80.k.89.duoi.110n (30con)
-T2";
+        #46, 49, 52
+       
+        //$message = "Dc bd.8998 10n b.1972 2n 392 4n 258 3n 897 475 223 815 1n xc 938 183 45n 392 40n 223 968 35n";
         $userDetail = Auth::user();
-        $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
-        echo "<h3>".$message."</h3>";
+        $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message_origin])->id;
+        echo "<h3>".$message_origin."</h3>";
         //$message = "T6.hn 77;88;99 đa vòng 15n";
         // 500 dong
         ////$message = preg_replace('/([0-9]+)([a-z^n]+)/','${1}${2} ', $message);//2326b 
-             
-        $message = $this->regMess($message); 
-        echo $message;  
-        //dd('111');
-        $tmpArr = explode(" ", $message);
-        $countAmount = $countChannel = $countBetType = 0;
-        $amountArr = $channelArr = $betTypeArr = [];    
-        
-        foreach($tmpArr as $k => $value){
+        try{
+            $message = $this->regMess($message_origin); 
+         
+            //dd('111');
+            $tmpArr = explode(" ", $message);
+            $countAmount = $countChannel = $countBetType = 0;
+            $amountArr = $channelArr = $betTypeArr = [];    
             
-            if($this->isChannel($value)){
-                $countChannel++;
-                $channelArr[] = $k;
-            }
-
-        }
-        // nếu tin nhắn ko có đài thì mặc định là dc
-        // TH chi co 1
-        $betArr = [];        
-        //echo "<br>";
-        if(count($channelArr) > 0){
-            foreach($channelArr as $key => $value){           
-                $position =   isset($channelArr[$key+1]) ? $channelArr[$key+1] : count($tmpArr);
-                $start = $key > 0 ? $value : 0;
-                $betArr[] = array_slice($tmpArr, $start, $position-$start);
+            foreach($tmpArr as $k => $value){
                 
+                if($this->isChannel($value)){
+                    $countChannel++;
+                    $channelArr[] = $k;
+                }
+
             }
-        }else{
-            $betArr[] = $tmpArr;
-        }   
-        //dd($betArr);
-        foreach($betArr as $arr){
-            $betArrDetail[] = $this->parseBetToChannel($arr);
+            // nếu tin nhắn ko có đài thì mặc định là dc
+            // TH chi co 1
+            $betArr = [];        
+            //echo "<br>";
+            if(count($channelArr) > 0){
+                foreach($channelArr as $key => $value){           
+                    $position =   isset($channelArr[$key+1]) ? $channelArr[$key+1] : count($tmpArr);
+                    $start = $key > 0 ? $value : 0;
+                    $betArr[] = array_slice($tmpArr, $start, $position-$start);
+                    
+                }
+            }else{
+                $betArr[] = $tmpArr;
+            }   
+            //dd($betArr);
+            foreach($betArr as $arr){
+                $betArrDetail[] = $this->parseBetToChannel($arr);
+            }
+            $betDetail = [];     
+            //dd($message);
+            //dd($betArrDetail);
+            foreach($betArrDetail as $k => $betChannelDetail){
+                $tmp2 = $this->parseDetail($betChannelDetail, $message);            
+                $betDetail = array_merge($betDetail, $tmp2);
+            }
+            //dd($betDetail);
+            $this->insertDB($betDetail, $message_id);
+        }catch(\Exception $ex){
+            echo ('Tin ko hieu: '.$message_origin);
+            //dd($ex->getMessage());
         }
-        $betDetail = [];     
-        //dd($message);
-        //dd($betArrDetail);
-        foreach($betArrDetail as $k => $betChannelDetail){
-            $tmp2 = $this->parseDetail($betChannelDetail, $message);            
-            $betDetail = array_merge($betDetail, $tmp2);
-        }
-        //dd($betDetail);
-        $this->insertDB($betDetail, $message_id);
-        
-        Session::forget('arrSo');
+        echo "OK: ".$message;   
     }
     function regMess($message){
         $message = preg_replace('/[ ]+/', '.', $message);
@@ -326,8 +319,9 @@ T2";
                         }
                     }
                     if($first1 == $first2){
-                        for($ki = $end1; $ki <= $end2; $ki++){
-                            $arr_number[] = str_replace($end1, $ki, $number1);
+                        $lengthA = strlen($number1);
+                        for($ki = $number1; $ki <= $number2; $ki++){
+                            $arr_number[] = str_pad($ki, $lengthA, "0", STR_PAD_LEFT);;
                         }                        
                     }
                 }
@@ -385,7 +379,7 @@ T2";
                 if(empty($arr_number) && isset($numberArr)){
                     $arr_number = $numberArr[$countII-1];
                 }
-                $numberArr[$countII] = $arr_number;                
+                $numberArr[$countII] = $arr_number;
                 
                 //var_dump("<pre>", $numberArr);
                 //dd($arr_number);
@@ -400,10 +394,23 @@ T2";
                     }                  
                 }
                 //dd($arr_number[0]);
-               
+               // if($arr_number[0] == 392){
+               //  dd($betTypeSelected);die;
+               //      dd($bet_type);
+               // }
                 
-                if(!$bet_type && strlen($arr_number[0]) >= 3 ){                    
-                    $bet_type = 'bl';                    
+                if(!$bet_type){        
+                    if(strlen($arr_number[0]) == 3){
+                        if(isset($betTypeSelected[$countII-1]) && $betTypeSelected[$countII-1]=='x'){
+                            $bet_type = 'x';
+                        }elseif(isset($betTypeSelected[$countII-1]) && $betTypeSelected[$countII-1]=='dxc'){
+                            $bet_type = 'dxc';
+                        }else{
+                            $bet_type = 'bl';
+                        }
+                    }elseif(strlen($arr_number[0]) == 4){
+                        $bet_type = 'bl';
+                    }                                    
                 }
                 if(!$bet_type){
                     dd($arr_number);
@@ -481,9 +488,10 @@ T2";
                         ];
                     } 
                 }
+                $betTypeSelected[$countII] = $bet_type;
                 $countII++;          
             }
-            
+            //dd($betTypeSelected);
         }
         return $bettttt;
     }

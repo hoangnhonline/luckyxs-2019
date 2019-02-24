@@ -48,6 +48,7 @@ T5
 
 
 TIỀN GIANG - Đầu - chẵn (00-98, 50con) 3n, Nhỏ (00-49, 50con) 25n. Đuôi - chẵn (00-98, 50con) 3n, nhỏ (00-49, 50con) 3n. KIÊN GIANG - đầu- chẵn (00-98, 50con) 10n, nhỏ (00-49, 50con) 3n. ĐUÔI - lẻ (01-99, 50con) 25n, nhỏ (00-49, 50con) 3n.   T19
+
 dc: 3752.3356 b2 b1 b1 x3 đ.x1. T27
 dc: 3752.3356 b2 b1 b1 x3 đ.x1. T27 ;# 32 b2,5. 67 b5.  Dc:8080.7738.8844 b1. 953 x62. 830 b5 x20. 552 x10 dd30. 782 x5. 836.723 b1 x5. 11 dd10.  T27
 2đ. 19.b10n.đđ10n. 00.k.99. (100c.bỏ19c.bỏ.số.chục.bõ.số.đôi.còn81c. )đđ30n- chanh . 8061.b2n.b2n.xc30n. 61.63.b10n.đđ10n. 543.583.xc20n.  T28
