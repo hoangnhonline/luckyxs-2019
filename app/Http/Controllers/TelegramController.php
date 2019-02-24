@@ -106,11 +106,13 @@ class TelegramController extends Controller
 			
             try{
                 $mess = $this->processMessage($message, $message_id);
-                $bot->reply('OK: ' . $mess);
+                
             }catch(\Exception $ex){
                 $bot->reply("Tin ko hieu: ".$message);
             }	
-            
+            if(isset($mess) && $mess != ''){
+                $bot->reply('OK: ' . $mess);
+            }            
 
 		});
 		// Start listening

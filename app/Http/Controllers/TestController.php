@@ -105,11 +105,13 @@ class TestController extends Controller
         echo "<h3>".$message."</h3>";        
         try{
             $mess = $this->processMessage($message, $message_id);
-               echo ('OK: ' . $mess);
         }catch(\Exception $ex){
-           echo ("Tin ko hieu: ".$message);
-           exit;
-        }   
+           echo ("Tin ko hieu: ".$message);         
+        }
+        if(isset($mess) && $mess != ''){            
+            echo ('OK: ' . $mess);
+        }
+   
         
          
           
