@@ -95,7 +95,7 @@ class TestController extends Controller
     }
     public function index()
     {        
-        $message = "2d.0584.1746.1647.1n T1";
+        $message = "2sgasd";
         Session::forget('arrSo');        
         #46, 49, 52
        
@@ -105,12 +105,12 @@ class TestController extends Controller
         echo "<h3>".$message."</h3>";        
         try{
             $mess = $this->processMessage($message, $message_id);
-               
+               echo ('OK: ' . $mess);
         }catch(\Exception $ex){
            echo ("Tin ko hieu: ".$message);
            exit;
         }   
-        echo ('OK: ' . $mess);
+        
          
           
     }
