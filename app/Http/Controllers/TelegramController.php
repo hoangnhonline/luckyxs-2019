@@ -521,9 +521,7 @@ class TelegramController extends Controller
                 dd($oneBet['number']);
             }           
             Session::put('arrSo', $arrSo);          
-            if($oneBet['channel'] == '2d' && $oneBet['number'] == 308){
-                var_dump($arrSo);
-            }  
+            
             $channelArr = $this->getChannelId($oneBet['channel']);
             $bet_type_id = $this->getBetTypeId($bet_type); 
             //dd($bet_type);
@@ -587,7 +585,7 @@ class TelegramController extends Controller
                         
                     }
                 }            
-                var_dump($oneBet);
+                
                 $this->processNormal($oneBet, $bet_type_id, $channelArr, $message_id);
                 
             }elseif($bet_type == 'da' || $bet_type == 'dx'){ 
@@ -959,7 +957,7 @@ class TelegramController extends Controller
         return in_array($value, $this->betTypeList);
     }
     function getBetTypeId($bet_type){  
-        var_dump("<hr>", $bet_type);
+        
         $rs  = BetType::where('keyword', $bet_type)->first();
         if($rs){
            return $rs->id;
@@ -1054,7 +1052,7 @@ class TelegramController extends Controller
                 break;
         }
         
-        var_dump($number);
+        
         if(!isset($total)){
             dd($bet_type_id);
         }

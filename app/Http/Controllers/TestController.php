@@ -95,8 +95,7 @@ class TestController extends Controller
     }
     public function index()
     {        
-        $message_origin = "TIỀN GIANG - Đầu - chẵn (00-98, 50con) 3n, Nhỏ (00-49, 50con) 25n. Đuôi - chẵn (00-98, 50con) 3n, nhỏ (00-49, 50con) 3n. KIÊN GIANG - đầu- chẵn (00-98, 50con) 10n, nhỏ (00-49, 50con) 3n. ĐUÔI - lẻ (01-99, 50con) 25n, nhỏ (00-49, 50con) 3n.   T19
-";
+        $message_origin = "2d.0584.1746.1647.1n T1";
         Session::forget('arrSo');        
         #46, 49, 52
        
@@ -150,11 +149,12 @@ class TestController extends Controller
             }
             //dd($betDetail);
             $this->insertDB($betDetail, $message_id);
+            echo "OK: ".$message; 
         }catch(\Exception $ex){
             echo ('Tin ko hieu: '.$message_origin);
             //dd($ex->getMessage());
         }
-        echo "OK: ".$message;   
+          
     }
     function regMess($message){
         $message = preg_replace('/[ ]+/', '.', $message);
@@ -518,9 +518,7 @@ class TestController extends Controller
                 dd($oneBet['number']);
             }           
             Session::put('arrSo', $arrSo);          
-            if($oneBet['channel'] == '2d' && $oneBet['number'] == 308){
-                var_dump($arrSo);
-            }  
+            
             $channelArr = $this->getChannelId($oneBet['channel']);
             $bet_type_id = $this->getBetTypeId($bet_type); 
             //dd($bet_type);
@@ -584,7 +582,7 @@ class TestController extends Controller
                         
                     }
                 }            
-                var_dump($oneBet);
+                
                 $this->processNormal($oneBet, $bet_type_id, $channelArr, $message_id);
                 
             }elseif($bet_type == 'da' || $bet_type == 'dx'){ 
@@ -956,7 +954,7 @@ class TestController extends Controller
         return in_array($value, $this->betTypeList);
     }
     function getBetTypeId($bet_type){  
-        var_dump("<hr>", $bet_type);
+        
         $rs  = BetType::where('keyword', $bet_type)->first();
         if($rs){
            return $rs->id;
@@ -1051,7 +1049,7 @@ class TestController extends Controller
                 break;
         }
         
-        var_dump($number);
+        
         if(!isset($total)){
             dd($bet_type_id);
         }
