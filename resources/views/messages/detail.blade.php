@@ -20,8 +20,8 @@
                 <th>
                   Loại đề
                 </th>
-                <th>Số</th>
-                <th>Số tiền</th>
+                <th style="text-align: right;">Số</th>
+                <th style="text-align: right;">Số tiền</th>
                 <th style="text-align: right;">
                   2 số
                 </th>
@@ -51,7 +51,7 @@
                 <td>                                 
                  	{{ $bet->betType->content }}                  
                 </td>
-                <td>
+                <td style="text-align: right;">
                   @if($bet->str_number)
                   {{ $bet->str_number }}
                   @else                  
@@ -65,14 +65,15 @@
                 <td align="right">
                 	{{ $bet->price }}
                 </td>                
-                <?php 
+                <?php                 
                   $total += $total2So = $bet->calTotal2So($bet->id);
                   $total += $total3So = $bet->calTotal3So($bet->id);
-                  ?>                
-                <td style="text-align: right;font-weight: bold;">
+                 
+                ?>                
+                <td style="text-align: right;">
                   {{ str_replace('.0', '', number_format($total2So, 1)) }}
                 </td>
-                <td style="text-align: right;font-weight: bold;">
+                <td style="text-align: right;">
                   {{ str_replace('.0', '', number_format($total3So, 1)) }}
                 </td>
                             
@@ -100,11 +101,11 @@
 </style>
 @stop
 @section('js')
-<script type="text/javascript">
+<!-- <script type="text/javascript">
   $(document).ready(function(){
     $('table tr').click(function(){
       $(this).remove();
     });
   });
-</script>
+</script> -->
 @stop
