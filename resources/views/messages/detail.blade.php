@@ -6,7 +6,7 @@
     <div class="card">
       <div class="card-body">
       	<a href="{{ route('messages.list') }}" class="btn btn-inverse-light btn-sm">Quay lại</a>
-        <h3 class="text-primary" style="margin-top: 10px;">{!! $detail->content !!}</h3>
+        <h3 class="text-primary" style="margin-top: 10px">{!! $detail->content !!}</h3>
         <div class="table-responsive">
           <table class="table table-bordered">
             <thead>
@@ -27,9 +27,7 @@
                 <th style="text-align: right;">
                   Tổng trước cò
                 </th>
-                <th style="text-align: right;">
-                  Tổng sau cò
-                </th>                
+                             
               </tr>
             </thead>
             <tbody>
@@ -74,16 +72,14 @@
                 	<!-- {{ number_format($bet->total) }} -->
                   {{ str_replace('.0', '', number_format($totalRow, 1)) }}
                 </td>
-                <td align="right">
-                	
-                </td>                
+                            
               </tr>
               @endforeach
               <tr>
                 <td colspan="6" style="text-align: right;">
                   <h1>{{ str_replace('.0', '', number_format($total, 1)) }}</h1>
                 </td>
-                <td></td>
+             
               </tr>
               @endif
 
@@ -94,6 +90,11 @@
     </div>
   </div>
 </div> 
+<style type="text/css">
+  .table td{
+    font-size: 20px;
+  }
+</style>
 @stop
 @section('js')
 <script type="text/javascript">
