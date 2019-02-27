@@ -10,9 +10,11 @@ use App\Models\BetType;
 use App\Models\Bet;
 use App\Models\Message;
 use App\User;
+use Exception;
+use Auth, Session;
 class TelegramController extends Controller
 {
-	private $channelList;
+    private $channelList;
     private $channelListKey;
     private $arrExpert = ['dp', 'dc', '2d'];
     private $channelByDay = 
@@ -72,47 +74,52 @@ class TelegramController extends Controller
     }
     public function __invoke()
     {
-    	$config = [
-		    'telegram' => config('botman.telegram')
-		];
-		// Load the driver(s) you want to use
-		DriverManager::loadDriver(\BotMan\Drivers\Telegram\TelegramDriver::class);
-		// Create an instance
-		$botman = BotManFactory::create($config);
-		// Give the bot something to listen for.
-		$botman->hears('/pass', function (BotMan $bot) {
-		    $bot->reply('Bạn Anh Hoàng.');
-		});
+        $config = [
+            'telegram' => config('botman.telegram')
+        ];
+        // Load the driver(s) you want to use
+        DriverManager::loadDriver(\BotMan\Drivers\Telegram\TelegramDriver::class);
+        // Create an instance
+        $botman = BotManFactory::create($config);
+        // Give the bot something to listen for.
+        $botman->hears('/pass', function (BotMan $bot) {
+            $bot->reply('Bạn Anh Hoàng.');
+        });
 
-		$botman->hears('/hi', function (BotMan $bot) {
-		    $bot->reply('Hi cc.');
-		});
+        $botman->hears('/hi', function (BotMan $bot) {
+            $bot->reply('Hi cc.');
+        });
 
-		$botman->hears('((.|\n)*)', function (BotMan $bot, $message) {
-			$userId = $bot->getUser()->getId();
-
-			$userExists = User::where('tel_id', '=', $userId)->count() >= 1;
-			if (!$userExists) {
-				$user = new User();
-				$user->username = $message;
-				$user->password = '';
-				$user->tel_id   = $userId;
-				$user->save();
-			}
-			$message_id = Message::create(['tel_id' => $userId, 'content' => $message])->id;
-			
+        $botman->hears('((.|\n)*)', function (BotMan $bot, $message) {
+            
             try{
+                $userId = $bot->getUser()->getId();
+
+                $userExists = User::where('tel_id', '=', $userId)->count() >= 1;
+                if (!$userExists) {
+                    $user = new User();
+                    $user->username = $message;
+                    $user->password = '';
+                    $user->tel_id   = $userId;
+                    $user->save();
+                }
+
+                $message_id = Message::create(['tel_id' => $userId, 'content' => $message])->id;            
+            
+            
                 $mess = $this->processMessage($message, $message_id);
                 $bot->reply('OK: ' . $mess);
-            }catch(\Throwable $ex){
-                $bot->reply("Tin ko hieu: ".$message);
-            }	 
+            }catch(\Throwable $e){
 
-		});
-		// Start listening
-		$botman->listen();
+                $bot->reply("Tin ko hieu: ".$message);
+                $bot->reply($e->getMessage());
+            }    
+
+        });
+        // Start listening
+        $botman->listen();
     }
-    function processMessage($message, $message_id){    	
+    function processMessage($message, $message_id){     
         $message = $this->regMess($message); 
          
         //dd('111');
@@ -606,7 +613,6 @@ class TelegramController extends Controller
                         'total' => $oneBet['price']*36, // 2 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d'),
-                        'len' => strlen($oneBet['number'][0]),
                         'str_channel' => $str_channel
                     ];
                     
@@ -655,8 +661,7 @@ class TelegramController extends Controller
                 'is_main' => $refer_bet_id > 0 ? 0 : 1,
                 'str_channel' => $str_channel,
                 'total' => $this->calTotal($bet_type_id, $oneBet['price'],$oneBet['number']),
-                'bet_day' => date('Y-m-d'),
-                'len' => strlen($oneBet['number'])
+                'bet_day' => date('Y-m-d')                   
             ];                    
            
             $rs = Bet::create($arr);
@@ -727,7 +732,6 @@ class TelegramController extends Controller
                         'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
                         'number_1' =>  $this->formatNumber($number),
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
-                        'len' => strlen($number),
                         'total' => $this->calTotal($bet_type_id, $oneBet['price'],  $number),
                         'bet_day' => date('Y-m-d'),
                         'str_channel' => $str_channel                 
@@ -783,8 +787,7 @@ class TelegramController extends Controller
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d'),
                         'str_number' => $str_number,
-                        'str_channel' => $str_channel,
-                        'len' => 2,
+                        'str_channel' => $str_channel 
                     ];
                     
                     $rs = Bet::create($arr);
