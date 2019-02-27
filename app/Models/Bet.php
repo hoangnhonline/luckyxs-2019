@@ -57,4 +57,12 @@ class Bet extends Model  {
     {
         return Bet::where('id', $id)->orWhere('refer_bet_id', $id)->sum('total');
     } 
+    public function calTotal2So($id)
+    {
+        return Bet::where('id', $id)->orWhere('refer_bet_id', $id)->where('len', 2)->sum('total');
+    } 
+    public function calTotal3So($id)
+    {
+        return Bet::where('id', $id)->orWhere('refer_bet_id', $id)->where('len', '>', 2)->sum('total');
+    } 
 }
