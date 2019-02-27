@@ -13,7 +13,7 @@
                 <th width="1%">
                   #
                 </th>
-                <th>
+                <th style="width: 300px">
                   Nội dung
                 </th>
                 <th style="text-align: right;">
@@ -22,7 +22,7 @@
                 <th style="text-align: right;">
                   3-4 số
                 </th>
-                <th>
+                <th width="1%">
                   Thời gian nhận
                 </th>
               </tr>
@@ -40,9 +40,13 @@
                 <td class="font-weight-medium">
                   {{ $i }}
                 </td>
-                <td>
-                  <a href="{{ route('messages.detail', $mess->id) }}">
+                <td width="300" style="width: 30px;">
+                  <a  data-toggle="tooltip" href="{{ route('messages.detail', $mess->id) }}" title="{{ $mess->content }}">
+                  @if(strlen($mess->content) > 50)
+                  {!! substr($mess->content, 0, 50) !!}...
+                  @else
                   {!! $mess->content !!}
+                  @endif
                   </a>
                 </td>
                 <td style="text-align: right;font-weight: bold;">
@@ -68,5 +72,18 @@
   .table td{
     font-size: 20px;
   }
+  .tooltip-inner {
+    max-width: 350px;
+    /* If max-width does not work, try using width instead */
+    width: 350px; 
+    text-align: left
+}
 </style>
+@stop
+@section('js')
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+});
+</script>
 @stop

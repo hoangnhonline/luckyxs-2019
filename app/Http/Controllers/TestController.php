@@ -95,11 +95,9 @@ class TestController extends Controller
     }
     public function index()
     {        
-        $message = "2sgasd";
+        
         Session::forget('arrSo');        
-        #46, 49, 52
-       
-        //$message = "Dc bd.8998 10n b.1972 2n 392 4n 258 3n 897 475 223 815 1n xc 938 183 45n 392 40n 223 968 35n";
+        $message = "2sgasd";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";        
@@ -169,6 +167,8 @@ class TestController extends Controller
         $message = preg_replace('/([0-9]+)m/', '${1}n', $message);
         $message = str_replace("kéo", 'k', $message);
         $message = str_replace("keo", 'k', $message);
+        $message = str_replace("cháh", 'dc', $message);
+        $message = str_replace("chah", 'dc', $message);
         //(29con) (50con)
         $message = preg_replace('/([0-9]+)con/', '', $message);
         //dd($message);
@@ -184,7 +184,8 @@ class TestController extends Controller
         //dd($message);
         //dd($message);
         //Phu 2017.05
-        $message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz.]+)/', '${1}bl9990n${2}', $message);
+        //$message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz.]+)/', '${1}bl9990n${2}', $message);
+        $message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz]+)/', '${1}bl9990n${2}', $message);
         $message = str_replace("daoxc", "dxc", $message);
 
         $message = str_replace("xc", "x", $message);
@@ -510,7 +511,7 @@ class TestController extends Controller
                 $arrSo = [];
             }    
               
-            try{
+            //try{
                 if(!is_array($oneBet['number'])){
                     $keyCacheSession =  $oneBet['channel']."-".$oneBet['number'];  
                     if(!isset($arrSo[$keyCacheSession])){
@@ -519,9 +520,9 @@ class TestController extends Controller
                         $arrSo[$keyCacheSession] += 1;
                     }    
                 }                
-            }catch(\Exception $ex){
-                dd($oneBet['number']);
-            }           
+            //}catch(\Exception $ex){
+              //  dd($oneBet['number']);
+            //}           
             Session::put('arrSo', $arrSo);          
             
             $channelArr = $this->getChannelId($oneBet['channel']);
@@ -967,11 +968,11 @@ class TestController extends Controller
             $bet_type = (preg_replace('/([0-9]*)([a-z])/', '$2', $bet_type));
             $bet_type = $this->formatBetType($bet_type);
             $rs  = BetType::where('keyword', $bet_type)->first();
-            if($rs){
+            //if($rs){
                return $rs->id;
-            }else{
-                dd("11111", $bet_type);
-            }
+            // }else{
+            //     dd("11111", $bet_type);
+            // }
         }
     }
     function formatNumber($number){
@@ -1049,14 +1050,14 @@ class TestController extends Controller
                 
                 break;
             default:
-                dd($bet_type_id);
+                //dd($bet_type_id);
                 # code...
                 break;
         }
         
         
         if(!isset($total)){
-            dd($bet_type_id);
+            //dd($bet_type_id);
         }
         return $total;
     }
