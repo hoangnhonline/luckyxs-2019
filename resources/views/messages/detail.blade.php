@@ -22,7 +22,10 @@
                 </th>
                 <th>Số</th>
                 <th style="text-align: right;">
-                  Số tiền
+                  2 số
+                </th>
+                <th style="text-align: right;">
+                  3-4 số
                 </th>
                 <th style="text-align: right;">
                   Tổng trước cò
@@ -63,14 +66,16 @@
                 </td>
                 <td align="right">
                 	{{ $bet->price }}
+                </td>                
+                <?php 
+                  $total += $total2So = $bet->calTotal2So($bet->id);
+                  $total += $total3So = $bet->calTotal3So($bet->id);
+                  ?>                
+                <td style="text-align: right;font-weight: bold;">
+                  {{ str_replace('.0', '', number_format($total2So, 1)) }}
                 </td>
-                <td align="right">
-                  <?php 
-                  $total += $totalRow = $bet->calTotal($bet->id);
-                  //$total += $bet->total;
-                  ?>
-                	<!-- {{ number_format($bet->total) }} -->
-                  {{ str_replace('.0', '', number_format($totalRow, 1)) }}
+                <td style="text-align: right;font-weight: bold;">
+                  {{ str_replace('.0', '', number_format($total3So, 1)) }}
                 </td>
                             
               </tr>
