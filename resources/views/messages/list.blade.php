@@ -16,10 +16,10 @@
                 <th>
                   Nội dung
                 </th>
-                <th>
+                <th style="text-align: right;">
                   2 số
                 </th>
-                <th>
+                <th style="text-align: right;">
                   3-4 số
                 </th>
                 <th>
@@ -45,10 +45,10 @@
                   {!! $mess->content !!}
                   </a>
                 </td>
-                <td>
+                <td style="text-align: right;font-weight: bold;">
                   {{ number_format($mess->calTotal2So($mess->id)) }}
                 </td>
-                <td>
+                <td style="text-align: right;font-weight: bold;">
                   {{ number_format($mess->calTotal3So($mess->id)) }}
                 </td>
                 <td>
@@ -64,4 +64,9 @@
     </div>
   </div>
 </div> 
+<style type="text/css">
+  .table td{
+    font-size: 20px;
+  }
+</style>
 @stop
