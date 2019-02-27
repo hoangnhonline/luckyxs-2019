@@ -187,7 +187,8 @@ class TelegramController extends Controller
         //dd($message);
         //dd($message);
         //Phu 2017.05
-        $message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz.]+)/', '${1}bl9990n${2}', $message);
+        //$message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz.]+)/', '${1}bl9990n${2}', $message);
+        $message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz]+)/', '${1}bl9990n${2}', $message);
         $message = str_replace("daoxc", "dxc", $message);
 
         $message = str_replace("xc", "x", $message);
@@ -513,7 +514,7 @@ class TelegramController extends Controller
                 $arrSo = [];
             }    
               
-            try{
+            //try{
                 if(!is_array($oneBet['number'])){
                     $keyCacheSession =  $oneBet['channel']."-".$oneBet['number'];  
                     if(!isset($arrSo[$keyCacheSession])){
@@ -522,9 +523,9 @@ class TelegramController extends Controller
                         $arrSo[$keyCacheSession] += 1;
                     }    
                 }                
-            }catch(\Exception $ex){
-                dd($oneBet['number']);
-            }           
+            //}catch(\Exception $ex){
+              //  dd($oneBet['number']);
+            //}           
             Session::put('arrSo', $arrSo);          
             
             $channelArr = $this->getChannelId($oneBet['channel']);
@@ -970,11 +971,11 @@ class TelegramController extends Controller
             $bet_type = (preg_replace('/([0-9]*)([a-z])/', '$2', $bet_type));
             $bet_type = $this->formatBetType($bet_type);
             $rs  = BetType::where('keyword', $bet_type)->first();
-            if($rs){
+            //if($rs){
                return $rs->id;
-            }else{
-                dd("11111", $bet_type);
-            }
+            // }else{
+            //     dd("11111", $bet_type);
+            // }
         }
     }
     function formatNumber($number){
@@ -1052,14 +1053,14 @@ class TelegramController extends Controller
                 
                 break;
             default:
-                dd($bet_type_id);
+                //dd($bet_type_id);
                 # code...
                 break;
         }
         
         
         if(!isset($total)){
-            dd($bet_type_id);
+            //dd($bet_type_id);
         }
         return $total;
     }
