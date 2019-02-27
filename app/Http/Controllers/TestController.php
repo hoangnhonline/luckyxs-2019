@@ -88,9 +88,9 @@ class TestController extends Controller
         $tel_id = $user->tel_id;
         $message_id = $request->id;
         $maxId = Message::orderBy('id', 'desc')->first()->id;
-        $detail = Message::where('tel_id', $tel_id)->where('id', $maxId)->first();        
+        $detail = Message::where('tel_id', $tel_id)->where('id', $message_id)->first();        
         //$betList = Bet::where('message_id', $maxId)->get();
-        $betList = Bet::where('message_id', $maxId)->where('is_main', 1)->get();
+        $betList = Bet::where('message_id', $message_id)->where('is_main', 1)->get();
         return view('messages.detail', compact('detail', 'betList'));
     }
     public function index()
