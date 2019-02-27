@@ -21,15 +21,13 @@
                   Loại đề
                 </th>
                 <th>Số</th>
+                <th>Số tiền</th>
                 <th style="text-align: right;">
                   2 số
                 </th>
                 <th style="text-align: right;">
                   3-4 số
-                </th>
-                <th style="text-align: right;">
-                  Tổng trước cò
-                </th>
+                </th>                
                              
               </tr>
             </thead>
@@ -81,7 +79,7 @@
               </tr>
               @endforeach
               <tr>
-                <td colspan="6" style="text-align: right;">
+                <td colspan="7" style="text-align: right;">
                   <h1>{{ str_replace('.0', '', number_format($total, 1)) }}</h1>
                 </td>
              
