@@ -17,6 +17,12 @@
                   Nội dung
                 </th>
                 <th>
+                  2 số
+                </th>
+                <th>
+                  3-4 số
+                </th>
+                <th>
                   Thời gian nhận
                 </th>
               </tr>
@@ -38,6 +44,12 @@
                   <a href="{{ route('messages.detail', $mess->id) }}">
                   {!! $mess->content !!}
                   </a>
+                </td>
+                <td>
+                  {{ number_format($mess->calTotal2So($mess->id)) }}
+                </td>
+                <td>
+                  {{ number_format($mess->calTotal3So($mess->id)) }}
                 </td>
                 <td>
                   {{ date('d-m-Y H:i', strtotime($mess->created_at)) }}

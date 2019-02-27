@@ -104,7 +104,7 @@ class TelegramController extends Controller
             try{
                 $mess = $this->processMessage($message, $message_id);
                 $bot->reply('OK: ' . $mess);
-            }catch(\Exception $ex){
+            }catch(\Throwable $ex){
                 $bot->reply("Tin ko hieu: ".$message);
             }	 
 
