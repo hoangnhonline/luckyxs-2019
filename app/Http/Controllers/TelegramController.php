@@ -104,7 +104,7 @@ class TelegramController extends Controller
                     $user->save();
                 }
 
-                $message_id = Message::create(['tel_id' => $userId, 'content' => $message]);            
+                $message_id = Message::create(['tel_id' => $userId, 'content' => $message])->id;            
             
             
                 $mess = $this->processMessage($message, $message_id);
