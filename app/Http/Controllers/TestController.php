@@ -97,7 +97,7 @@ class TestController extends Controller
     {        
         
         Session::forget('arrSo');        
-        $message = "2sgasd";
+        $message = "cháh 73.b.20n 273.b.3n.xc50n 2đ.33.đđ.20n.t3";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";        
