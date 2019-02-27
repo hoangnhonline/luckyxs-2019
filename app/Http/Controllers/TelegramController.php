@@ -119,9 +119,26 @@ class TelegramController extends Controller
         // Start listening
         $botman->listen();
     }
+    public function index()
+    { 
+        Session::forget('arrSo');        
+        $message = "088daox15 2dai 088x70 dc";
+        $userDetail = Auth::user();
+        $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
+        echo "<h3>".$message."</h3>";        
+       // try{
+            $mess = $this->processMessage($message, $message_id);
+            //dd($mess);
+        //}catch(\Exception $ex){
+          // echo ("Tin ko hieu: ".$message);         
+        //}
+        if(isset($mess) && $mess != ''){            
+            echo ('OK: ' . $mess);
+        }
+    }
     function processMessage($message, $message_id){     
         $message = $this->regMess($message); 
-         
+         echo($message)."<br>";
         //dd('111');
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
@@ -155,7 +172,7 @@ class TelegramController extends Controller
         }
         $betDetail = [];     
         //dd($message);
-        //dd($betArrDetail);
+        dd($betArrDetail);
         foreach($betArrDetail as $k => $betChannelDetail){
             $tmp2 = $this->parseDetail($betChannelDetail, $message);            
             $betDetail = array_merge($betDetail, $tmp2);
@@ -165,6 +182,7 @@ class TelegramController extends Controller
         return $message;
     }
     function regMess($message){
+        //$message = strtolower($message);
         $message = preg_replace('/[ ]+/', '.', $message);
         $message = preg_replace('/[\r\n]+/', '.', $message);
         $message = preg_replace('/[+]+/', '.', $message);
@@ -172,6 +190,9 @@ class TelegramController extends Controller
         $message = preg_replace('/([0-9]+)m/', '${1}n', $message);
         $message = str_replace("kéo", 'k', $message);
         $message = str_replace("keo", 'k', $message);
+        $message = str_replace("cháh", 'dc', $message);
+        $message = str_replace("chah", 'dc', $message);
+        //dd($message);
         //(29con) (50con)
         $message = preg_replace('/([0-9]+)con/', '', $message);
         //dd($message);
@@ -285,10 +306,13 @@ class TelegramController extends Controller
         $message = (preg_replace('/([0-9]{2,})([abcdefghijklmopqrstuvwxyz]{2,})/', '$1 $2', $message));
         //dd($message);
         $message = (preg_replace('/([0-9]{2,})([abcdefghijklmopqrstuvwxyz])/', '$1 $2', $message));
-        //dd($message);  
- 
+        //dd($message); 
+        //088 daox15 2d 088 x70 dc
+       
+        
         $message = $this->formatMessage($message);
         $message = str_replace("n n", "n", $message);  
+         $message = (preg_replace('/([0-9]+)([ ])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([ ])/', '$1$2$3 $4n$5', $message)); 
         return $message;
     }
     function parseDetail($betArrDetail, $message){  
@@ -422,7 +446,7 @@ class TelegramController extends Controller
                     }                                    
                 }
                 if(!$bet_type){
-                    dd($arr_number);
+                    $bet_type = $betTypeSelected[$countII-1];
                 }
                 if($bet_type == 'dx' && strlen($arr_number[0]) == 3){
                     $bet_type = 'dxc';
@@ -603,18 +627,20 @@ class TelegramController extends Controller
                 $str_channel = Channel::getChannelName($channelArr);
                 foreach($channelArr as $channel_id){
                     $countDv1++;
+                    $number1 = $this->formatNumber($oneBet['number'][0]);
                     $arr = [
                         'channel_id' => $channel_id,
                         'bet_type_id' => $bet_type_id,
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-                        'number_1' => $this->formatNumber($oneBet['number'][0]),
+                        'number_1' => $number1,
                         'number_2' => $this->formatNumber($oneBet['number'][1]),
                         'refer_bet_id' => $countDv1 > 1 ? $refer_bet_id : null,
                         'total' => $oneBet['price']*36, // 2 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d'),
-                        'str_channel' => $str_channel
+                        'str_channel' => $str_channel,
+                        'len' => strlen($number1),
                     ];
                     
                     $rs = Bet::create($arr);
@@ -652,17 +678,19 @@ class TelegramController extends Controller
             if(($bet_type_id == 1 || $bet_type_id == 2 || $bet_type_id == 3 ) && strlen($oneBet['number']) > 2){                
                 $oneBet['number'] = substr($oneBet['number'], -2);                
             }
+            $number1 = $this->formatNumber($oneBet['number']);
             $arr = [
                 'channel_id' => $channel_id,
                 'bet_type_id' => $bet_type_id,
                 'message_id' => $message_id,
                 'price' => $oneBet['price'],
-                'number_1' => $this->formatNumber($oneBet['number']),
+                'number_1' => $number1,
                 'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
                 'is_main' => $refer_bet_id > 0 ? 0 : 1,
                 'str_channel' => $str_channel,
                 'total' => $this->calTotal($bet_type_id, $oneBet['price'],$oneBet['number']),
-                'bet_day' => date('Y-m-d')                   
+                'bet_day' => date('Y-m-d'),
+                'len' => strlen($number1),               
             ];                    
            
             $rs = Bet::create($arr);
@@ -687,17 +715,19 @@ class TelegramController extends Controller
                         continue;
                     }
                     $countDv++;
+                    $number1 = $this->formatNumber($number);
                     $arr = [
                         'channel_id' => $channel_id,
                         'bet_type_id' => $bet_type_id, // bao lo
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-                        'number_1' =>  $this->formatNumber($number),
+                        'number_1' =>  $number1,
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
                         'str_channel' => $str_channel,
                         'total' => $this->calTotal($bet_type_id, $oneBet['price'],  $number),
-                        'bet_day' => date('Y-m-d')    
+                        'bet_day' => date('Y-m-d'),
+                        'len' => strlen($number1)
                     ];                    
                    
                     $rs = Bet::create($arr);
@@ -725,17 +755,19 @@ class TelegramController extends Controller
                         continue;
                     }
                     $countDv++;
+                    $number1 = $this->formatNumber($number);
                     $arr = [
                         'channel_id' => $channel_id,
                         'bet_type_id' => $bet_type_id, //xiu chu
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
                         'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
-                        'number_1' =>  $this->formatNumber($number),
+                        'number_1' =>  $number1,
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'total' => $this->calTotal($bet_type_id, $oneBet['price'],  $number),
                         'bet_day' => date('Y-m-d'),
-                        'str_channel' => $str_channel                 
+                        'str_channel' => $str_channel,
+                        'len' => strlen($number1)             
                     ];                    
                    
                     $rs = Bet::create($arr);
@@ -788,7 +820,8 @@ class TelegramController extends Controller
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d'),
                         'str_number' => $str_number,
-                        'str_channel' => $str_channel 
+                        'str_channel' => $str_channel,
+                        'len' => 2,
                     ];
                     
                     $rs = Bet::create($arr);
@@ -853,7 +886,7 @@ class TelegramController extends Controller
             }
         }
         //echo "<hr><pre>";
-        //print_r($arrNew);
+        print_r($arrNew);die;
         if(empty($betTypeKey)){
             $tmpStr = end($arrNew);
             $tmpStr = preg_replace('/([a-z])([0-9,{1,}])/', '$1 ${2}n', $tmpStr);
@@ -920,6 +953,7 @@ class TelegramController extends Controller
         $message = str_replace("lay tin nay", "", $message);
         $message = str_replace("bd", "db", $message);
         $message = str_replace("daoxc", "dxc", $message);
+        $message = str_replace("daox", "dxc", $message);
         $message = str_replace("bdao", "db", $message);        
         $message = str_replace("xdao", "dxc", $message);
         $message = str_replace("xd", "dxc", $message);

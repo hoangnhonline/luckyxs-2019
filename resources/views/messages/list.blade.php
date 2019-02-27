@@ -49,10 +49,10 @@
                   @endif
                   </a>
                 </td>
-                <td style="text-align: right;font-weight: bold;">
+                <td style="text-align: right;">
                   {{ number_format($mess->calTotal2So($mess->id)) }}
                 </td>
-                <td style="text-align: right;font-weight: bold;">
+                <td style="text-align: right;">
                   {{ number_format($mess->calTotal3So($mess->id)) }}
                 </td>
                 <td>

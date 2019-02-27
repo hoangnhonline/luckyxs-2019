@@ -600,18 +600,21 @@ class TestController extends Controller
                 $str_channel = Channel::getChannelName($channelArr);
                 foreach($channelArr as $channel_id){
                     $countDv1++;
+                    $number1 = $this->formatNumber($oneBet['number'][0]);
+
                     $arr = [
                         'channel_id' => $channel_id,
                         'bet_type_id' => $bet_type_id,
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-                        'number_1' => $this->formatNumber($oneBet['number'][0]),
+                        'number_1' => $number1,
                         'number_2' => $this->formatNumber($oneBet['number'][1]),
                         'refer_bet_id' => $countDv1 > 1 ? $refer_bet_id : null,
                         'total' => $oneBet['price']*36, // 2 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d'),
-                        'str_channel' => $str_channel
+                        'str_channel' => $str_channel,
+                        'len' => strlen($number1)
                     ];
                     
                     $rs = Bet::create($arr);
@@ -649,17 +652,19 @@ class TestController extends Controller
             if(($bet_type_id == 1 || $bet_type_id == 2 || $bet_type_id == 3 ) && strlen($oneBet['number']) > 2){                
                 $oneBet['number'] = substr($oneBet['number'], -2);                
             }
+            $number1 = $this->formatNumber($oneBet['number']);
             $arr = [
                 'channel_id' => $channel_id,
                 'bet_type_id' => $bet_type_id,
                 'message_id' => $message_id,
                 'price' => $oneBet['price'],
-                'number_1' => $this->formatNumber($oneBet['number']),
+                'number_1' => $number1,
                 'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
                 'is_main' => $refer_bet_id > 0 ? 0 : 1,
                 'str_channel' => $str_channel,
                 'total' => $this->calTotal($bet_type_id, $oneBet['price'],$oneBet['number']),
-                'bet_day' => date('Y-m-d')                   
+                'bet_day' => date('Y-m-d'),
+                'len' =>   strlen($number1)                
             ];                    
            
             $rs = Bet::create($arr);
