@@ -606,11 +606,8 @@ class TelegramController extends Controller
                         'total' => $oneBet['price']*36, // 2 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d'),
-<<<<<<< HEAD
                         'len' => strlen($oneBet['number'][0]),
-=======
                         'str_channel' => $str_channel
->>>>>>> 75d45a0537190d308c9c9a31999493eb6e9b8f3f
                     ];
                     
                     $rs = Bet::create($arr);
@@ -727,15 +724,10 @@ class TelegramController extends Controller
                         'bet_type_id' => $bet_type_id, //xiu chu
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-<<<<<<< HEAD
-                        'number_1' =>  $number,
-                        'is_main' => 1,
-                        'len' => strlen($number),
-=======
                         'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
                         'number_1' =>  $this->formatNumber($number),
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
->>>>>>> 75d45a0537190d308c9c9a31999493eb6e9b8f3f
+                        'len' => strlen($number),
                         'total' => $this->calTotal($bet_type_id, $oneBet['price'],  $number),
                         'bet_day' => date('Y-m-d'),
                         'str_channel' => $str_channel                 
@@ -784,20 +776,15 @@ class TelegramController extends Controller
                         'bet_type_id' => $bet_type_id,
                         'message_id' => $message_id,
                         'price' => $oneBet['price'],
-<<<<<<< HEAD
-                        'number_1' => $capSoArr[0],
-                        'number_2' => $capSoArr[1],
-                        'len' => strlen($capSoArr[0]),
-=======
                         'number_1' => substr($this->formatNumber($capSoArr[0]), -2),
                         'number_2' => substr($this->formatNumber($capSoArr[1]), -2),
->>>>>>> 75d45a0537190d308c9c9a31999493eb6e9b8f3f
                         'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
                         'total' => $oneBet['price']*36, // 1 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
                         'bet_day' => date('Y-m-d'),
                         'str_number' => $str_number,
-                        'str_channel' => $str_channel 
+                        'str_channel' => $str_channel,
+                        'len' => 2,
                     ];
                     
                     $rs = Bet::create($arr);
