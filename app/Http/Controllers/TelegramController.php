@@ -102,7 +102,7 @@ class TelegramController extends Controller
 			
 			$bot->reply('OK: ' . $message);
 
-			$message_id = Message::create(['tel_id' => $userId, 'content' => $message]);
+			$message_id = Message::create(['tel_id' => $userId, 'content' => $message])->id;
 			
 			$this->processMessage($message, $message_id);
 			$bot->reply('OK: ' . $mess);
@@ -188,7 +188,8 @@ class TelegramController extends Controller
                         'refer_bet_id' => $countDv1 > 1 ? $refer_bet_id : null,
                         'total' => $oneBet['price']*72, // 2 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,
-                        'bet_day' => date('Y-m-d')
+                        'bet_day' => date('Y-m-d'),
+                        'len' => strlen($oneBet['number'][0]),
                     ];
                     
                     $rs = Bet::create($arr);
@@ -219,7 +220,8 @@ class TelegramController extends Controller
                 'number_1' => $oneBet['number'],
                 'is_main' => 1,
                 'total' => $this->calTotal($bet_type_id, $oneBet['price'],$oneBet['number']),
-                'bet_day' => date('Y-m-d')                   
+                'bet_day' => date('Y-m-d'),
+                'len' => strlen($oneBet['number'])
             ];                    
            
             Bet::create($arr);
@@ -241,6 +243,7 @@ class TelegramController extends Controller
                         'price' => $oneBet['price'],
                         'number_1' =>  $number,
                         'is_main' => 1,
+                        'len' => strlen($number),
                         'total' => $this->calTotal($bet_type_id, $oneBet['price'],  $number),
                         'bet_day' => date('Y-m-d')                   
                     ];                    
@@ -267,6 +270,7 @@ class TelegramController extends Controller
                         'price' => $oneBet['price'],
                         'number_1' => $capSoArr[0],
                         'number_2' => $capSoArr[1],
+                        'len' => strlen($capSoArr[0]),
                         'refer_bet_id' => $countDv > 1 ? $refer_bet_id : null,
                         'total' => $oneBet['price']*72, // 2 dai x 18 lo x 2 so = 72 lo
                         'is_main' => $refer_bet_id > 0 ? 0 : 1,

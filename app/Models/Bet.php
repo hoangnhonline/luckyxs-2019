@@ -27,6 +27,7 @@ class Bet extends Model  {
     protected $fillable = [
         'bet_type_id', 
         'channel_id',
+        'len',
         'message_id',
         'refer_bet_id',
         'number_1',
