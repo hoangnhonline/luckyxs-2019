@@ -122,7 +122,7 @@ class TelegramController extends Controller
     public function index()
     { 
         Session::forget('arrSo');        
-        $message = "088daox15 2dai 088x70 dc";
+        $message = "Ct.đn.59.95.ab100n,.ag.43.dau150n.83.dui100n.72.ab100n.78.dau100n.dui200n.0k";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";        
@@ -157,8 +157,30 @@ class TelegramController extends Controller
         $betArr = [];        
         //echo "<br>";
        // dd(count($tmpArr));
+        //dd($channelArr);
+
         //dd(end($channelArr));
         if(count($channelArr) > 0){
+            //Ct.đn.59.95.ab100n
+            if($channelArr[0] == 0 && isset($channelArr[1]) && $channelArr[1] == 1){ 
+                //Ct.đn.59.95.ab100n
+                $tmpArr[0] = '2d';
+                unset($tmpArr[1]);
+                $message = implode(" ", $tmpArr);
+                $tmpArr = explode(" ", $message);
+                $countAmount = $countChannel = $countBetType = 0;
+                $amountArr = $channelArr = $betTypeArr = [];    
+                
+                foreach($tmpArr as $k => $value){
+                    
+                    if($this->isChannel($value)){
+                        $countChannel++;
+                        $channelArr[] = $k;
+                    }
+
+                }
+            }
+
             // dai phia sau
             if(end($channelArr) == count($tmpArr)-1){
            
@@ -206,6 +228,8 @@ class TelegramController extends Controller
         $message = str_replace("keo", 'k', $message);
         $message = str_replace("cháh", 'dc', $message);
         $message = str_replace("chah", 'dc', $message);
+        $message = str_replace("ab", 'dd', $message);
+
         //dd($message);
         //(29con) (50con)
         $message = preg_replace('/([0-9]+)con/', '', $message);
@@ -334,7 +358,7 @@ class TelegramController extends Controller
         // dd($betArrDetail);
         foreach($betArrDetail as $channel => $arr){
             $countII = 0;
-
+            var_dump($channel);
             foreach($arr as $tmp){
                 
                 $channel_bet = $channel;
@@ -445,7 +469,7 @@ class TelegramController extends Controller
                //  dd($betTypeSelected);die;
                //      dd($bet_type);
                // }
-                
+               // var_dump($bet_type);
                 if(!$bet_type){        
                     if(strlen($arr_number[0]) == 3){
                         if(isset($betTypeSelected[$countII-1]) && $betTypeSelected[$countII-1]=='x'){
@@ -1038,6 +1062,9 @@ class TelegramController extends Controller
             $channelSelected = [$this->channelListKey[$this->channelByDay[$today][0]]];
         }elseif($channel == 'dp'){
             $channelSelected = [$this->channelListKey[$this->channelByDay[$today][1]]];
+        }else{
+            $channelSelected = [$this->channelListKey[$channel]];
+            //dd($channelSelected);
         }
 
         return $channelSelected;
