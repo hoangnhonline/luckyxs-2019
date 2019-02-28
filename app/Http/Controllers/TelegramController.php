@@ -138,7 +138,7 @@ class TelegramController extends Controller
     }
     function processMessage($message, $message_id){     
         $message = $this->regMess($message); 
-         echo($message)."<br>";
+        //echo($message)."<br>";
         //dd('111');
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
@@ -172,7 +172,7 @@ class TelegramController extends Controller
         }
         $betDetail = [];     
         //dd($message);
-        dd($betArrDetail);
+        //dd($betArrDetail);
         foreach($betArrDetail as $k => $betChannelDetail){
             $tmp2 = $this->parseDetail($betChannelDetail, $message);            
             $betDetail = array_merge($betDetail, $tmp2);
