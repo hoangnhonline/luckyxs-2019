@@ -138,7 +138,7 @@ class TelegramController extends Controller
     }
     function processMessage($message, $message_id){     
         $message = $this->regMess($message); 
-        //echo($message)."<br>";
+        echo($message)."<br>";
         //dd('111');
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
@@ -156,13 +156,27 @@ class TelegramController extends Controller
         // TH chi co 1
         $betArr = [];        
         //echo "<br>";
+       // dd(count($tmpArr));
+        //dd(end($channelArr));
         if(count($channelArr) > 0){
-            foreach($channelArr as $key => $value){           
-                $position =   isset($channelArr[$key+1]) ? $channelArr[$key+1] : count($tmpArr);
-                $start = $key > 0 ? $value : 0;
-                $betArr[] = array_slice($tmpArr, $start, $position-$start);
-                
-            }
+            // dai phia sau
+            if(end($channelArr) == count($tmpArr)-1){
+           
+                foreach($channelArr as $key => $value){  
+                   
+                    $start = isset($channelArr[$key-1]) ? $channelArr[$key-1]+1 : 0;
+                    $position =   $value+1;
+                    $betArr[] = array_slice($tmpArr, $start, $position);
+                }
+                //dd($betArr);
+            }else{
+                foreach($channelArr as $key => $value){           
+                    $position =   isset($channelArr[$key+1]) ? $channelArr[$key+1] : count($tmpArr);
+                    $start = $key > 0 ? $value : 0;
+                    $betArr[] = array_slice($tmpArr, $start, $position-$start);
+                    
+                }    
+            }            
         }else{
             $betArr[] = $tmpArr;
         }   
@@ -866,8 +880,8 @@ class TelegramController extends Controller
 
     function parseBetToChannel($arr){  
         
-        //dd($arr);
-        $patternChannel = '/[a-z]/';            
+        ///dd($arr);
+        $patternChannel = '/[a-z]+/';            
         if (preg_match_all($patternChannel, $arr[0], $matches)){            
             $channel = $arr[0]; // dc, dp, 2d, vl, tp, kg...       
             $arrNew = array_slice($arr, 1, count($arr));
@@ -875,7 +889,7 @@ class TelegramController extends Controller
             $channel = $arr[count($arr)-1];
             $arrNew = array_slice($arr, 0, -1);    
         }
-          
+        //dd( $channel, $arrNew);
         foreach($arrNew as $k => $v){
             // if (preg_match_all('/[a-z][0-9,{1,}]/', $v, $matches)){
             //     $v = preg_replace('/([a-z])([0-9,{1,}])/', '${2}n', $v);                
