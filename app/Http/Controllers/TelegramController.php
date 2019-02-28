@@ -886,7 +886,7 @@ class TelegramController extends Controller
             }
         }
         //echo "<hr><pre>";
-        print_r($arrNew);die;
+//        print_r($arrNew);die;
         if(empty($betTypeKey)){
             $tmpStr = end($arrNew);
             $tmpStr = preg_replace('/([a-z])([0-9,{1,}])/', '$1 ${2}n', $tmpStr);
