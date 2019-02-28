@@ -122,7 +122,7 @@ class TelegramController extends Controller
     public function index()
     { 
         Session::forget('arrSo');        
-        $message = "Ct.đn.59.95.ab100n,.ag.43.dau150n.83.dui100n.72.ab100n.78.dau100n.dui200n.0k";
+        $message = "2d 27 57 17 Dav 2n 77 37 67 Dav 2n 07 47 87 Dav 2n 97 77 57 Dav 2n 28 68 88 Dav 2n 83 72 Da 5n B 10n 44 11 Da 5n B 10n 081 B 5n Dx 10n 886 B 5n Dx 30n";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";        
@@ -229,7 +229,16 @@ class TelegramController extends Controller
         $message = str_replace("cháh", 'dc', $message);
         $message = str_replace("chah", 'dc', $message);
         $message = str_replace("ab", 'dd', $message);
-
+        $message = str_replace("ab", 'dd', $message);
+        $message = str_replace("triệu", 'tr', $message);
+        $message = str_replace("trieu", 'tr', $message);
+        $message = str_replace("dbl", 'db', $message);
+        //44.b7nđđ30n.7232.đ0.3.đxc6n.xc10n..1174.7702.đ0.2.đxc2n.935.xc10n..đc
+        $message = preg_replace('/.đ0.([0-5,{1}])./', '.db9990${1}n.', $message);
+        //336,663 bl100 xc250 dbl100 333 bl200 xc300 933bl200 dbl200 xc250 dxc250 33 bl500 đd1tr dc
+        $message = preg_replace('/([1-9,{1}])tr/', '${1}000n', $message);
+        //dd($message);
+        
         //dd($message);
         //(29con) (50con)
         $message = preg_replace('/([0-9]+)con/', '', $message);
@@ -249,7 +258,7 @@ class TelegramController extends Controller
         //$message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz.]+)/', '${1}bl9990n${2}', $message);
         $message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz]+)/', '${1}bl9990n${2}', $message);
         $message = str_replace("daoxc", "dxc", $message);
-
+        $message = str_replace("đxc", "dxc", $message);
         $message = str_replace("xc", "x", $message);
         $message = preg_replace('/đ.x([0-9]+)/', 'dxc${1}', $message);
         $message = preg_replace('/d.x([0-9]+)/', 'dxc${1}', $message);
@@ -365,7 +374,10 @@ class TelegramController extends Controller
                 $price = str_replace("n", "", array_pop($tmp)); // lay so tien va xoa luon
                 $price = $price == 0 ? 0.5 : $price;
                 $price = $price == 99902 ? 0.2 : $price;
+                $price = $price == 99903 ? 0.3 : $price;
+                $price = $price == 99904 ? 0.4 : $price;
                 $price = $price == 999025 ? 0.25 : $price;
+                $price = $price == 999035 ? 0.35 : $price;
                 $price = $price == 9990 ? 0.5 : $price;
                 $price = $price == 9991 ? 1.5 : $price;
                 $price = $price == 9992 ? 2.5 : $price;
@@ -966,7 +978,8 @@ class TelegramController extends Controller
         $message = str_replace("duoi", "dui", $message);
         $message = str_replace("D.phu", "dp", $message);
         $message = str_replace("D.Phu", "dp", $message);
-        $message = str_replace("dbao", "db", $message);        
+        $message = str_replace("dbao", "db", $message);   
+        $message = str_replace("bao", "bl", $message);      
         $message = str_replace("...", " ", $message);
         $message = str_replace(":", " ", $message);
         $message = str_replace("..", " ", $message);
