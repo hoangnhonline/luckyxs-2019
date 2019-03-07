@@ -112,7 +112,7 @@ class TelegramController extends Controller
             }catch(\Throwable $e){
 
                 $bot->reply("Tin ko hieu: ".$message);
-                $bot->reply($e->getMessage());
+               // $bot->reply($e->getMessage());
             }    
 
         });
