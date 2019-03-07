@@ -97,7 +97,7 @@ class TestController extends Controller
     {        
         
         Session::forget('arrSo');        
-        $message = "cháh 73.b.20n 273.b.3n.xc50n 2đ.33.đđ.20n.t3";
+        $message = "Dc .3938 b2n b2n. Xc50n dxc 50n.  Phu . 39 đd50n . T1";
         $userDetail = Auth::user();
         $message_id = Message::create(['tel_id' => $userDetail->tel_id, 'content' => $message])->id;
         echo "<h3>".$message."</h3>";        
@@ -166,6 +166,8 @@ class TestController extends Controller
         $message = preg_replace('/[.]+/', '.', $message);
         $message = preg_replace('/([0-9]+)m/', '${1}n', $message);
         $message = str_replace("kéo", 'k', $message);
+        $message = str_replace("dch", 'dc', $message);
+        
         $message = str_replace("keo", 'k', $message);
         $message = str_replace("cháh", 'dc', $message);
         $message = str_replace("chah", 'dc', $message);
