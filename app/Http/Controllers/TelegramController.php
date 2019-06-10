@@ -139,26 +139,10 @@ class TelegramController extends Controller
         }
     }
     function processMessage($message, $message_id){   
-        $message .= ".";  
-        $message.=".";
-
-        $pattern1 = '/([. ])([0-9]+)(.)([abcdefghijklmopqrstuvwxyz]+)(.)([0-9]+)([. ])/';
-        if(preg_match_all($pattern1, $message, $out)){
-            
-            $message = preg_replace( $pattern1, '$1$2$3$4$5$6n$7', $message);
-           // dd($message);
-        }
-        $pattern2 = '/([. ])([abcdefghijklmopqrstuvwxyz]+)(.)([0-9]+)([ ])/';
-        if(preg_match_all($pattern2, $message, $out)){
-            //dd($out);
-           // $message = preg_replace( $pattern2, '$1$2$3$4n$5 ', $message);
-           // dd($message);
-        }
-        //dd($message);
+        $message .= ".";                  
+        
         $message = $this->regMess($message); 
-        //echo($message)."<br>";
-       //dd($message);
-        //dd('111');
+        
         $tmpArr = explode(" ", $message);
         $countAmount = $countChannel = $countBetType = 0;
         $amountArr = $channelArr = $betTypeArr = [];    
@@ -174,15 +158,9 @@ class TelegramController extends Controller
         // nếu tin nhắn ko có đài thì mặc định là dc
         // TH chi co 1
         $betArr = [];        
-        //echo "<br>";
-       // dd(count($tmpArr));
-        //dd($channelArr);
-
-        //dd(end($channelArr));
-        if(count($channelArr) > 0){
-            //Ct.đn.59.95.ab100n
-            if($channelArr[0] == 0 && isset($channelArr[1]) && $channelArr[1] == 1){ 
-                //Ct.đn.59.95.ab100n
+       
+        if(count($channelArr) > 0){            
+            if($channelArr[0] == 0 && isset($channelArr[1]) && $channelArr[1] == 1){                
                 $tmpArr[0] = '2d';
                 unset($tmpArr[1]);
                 $message = implode(" ", $tmpArr);
@@ -252,93 +230,68 @@ class TelegramController extends Controller
         $message = preg_replace('/[+]+/', '.', $message);
         $message = preg_replace('/[.]+/', '.', $message);
         $message = preg_replace('/([0-9]+)m/', '${1}n', $message);
-        $message = str_replace("xiu chu", 'xc', $message);
+       
         $message = str_replace("keo.den", 'k', $message);
+        $message = str_replace("keo", 'k', $message);  
+
         $message = str_replace("2₫.", '2d.', $message);
+
         $message = str_replace("d.phu", 'dp', $message);
-        
-        
+        $message = str_replace("dai phu", 'dp', $message);
+        $message = str_replace("d.p", 'dp', $message);
        // dd($message);
         $message = str_replace("dch", 'dc', $message);
+         $message = str_replace("dai chanh", 'dc', $message);
+        $message = str_replace("dai chinh", 'dc', $message);
+        $message = str_replace("chah", 'dc', $message);
+        $message = str_replace("d.c", 'dc', $message);
+
+         $message = str_replace("xiu chu", 'xc', $message);
         $message = str_replace("x.chu", 'xc', $message);
         $message = str_replace("x.c", 'xc', $message);
         $message = str_replace("xiu", 'xc', $message);
-        $message = str_replace("dai phu", 'dp', $message);
-        $message = str_replace("dai chanh", 'dc', $message);
-        $message = str_replace("dai chinh", 'dc', $message);
-        $message = str_replace("keo", 'k', $message);      
-        $message = str_replace("chah", 'dc', $message);
+        
         $message = str_replace("ab", 'dd', $message);         
         $message = str_replace("trieu", 'tr', $message);
-        $message = str_replace("dbl", 'db', $message);
-         $message = str_replace("d.c", 'dc', $message);
-        $message = str_replace("d.p", 'dp', $message);
-        //44.b7nđđ30n.7232.đ0.3.đxc6n.xc10n..1174.7702.đ0.2.đxc2n.935.xc10n..đc
+        $message = str_replace("dbl", 'db', $message);                
+       
         $message = preg_replace('/.đ0.([0-5,{1}])./', '.db9990${1}n.', $message);
-        //336,663 bl100 xc250 dbl100 333 bl200 xc300 933bl200 dbl200 xc250 dxc250 33 bl500 đd1tr dc
+       
         $message = preg_replace('/([1-9,{1}])tr/', '${1}000n', $message);
-        //dd($message);
-        
-        //dd($message);
-        //(29con) (50con)
+       
         $message = preg_replace('/([0-9]+)con/', '', $message);
-        //dd($message);
+       
         $message = preg_replace('/([0-9]+)([k])([0-9]+)/', '${1} ${2} ${3} ', $message);
-        //dd($message);
-        //073b10xc
+       
         $message = preg_replace('/([0-9,{3,}])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([abcdefghijklmopqrstuvwxyz]+)/', '${1}${2}${3}n${4}', $message);
-
-        //.1n5.
-        $message = preg_replace('/([0-9,{1}])([n])([5])/', '999${1}n', $message);
-        //6599.1n.
-        //$message = preg_replace('/([.])([0-9,{4}])([.])([0-9]+)([n])(.)([0-9]+)/', '.${2}.bl${4}n.${6}', $message);
-        //dd($message);
-        //dd($message);
-        //Phu 2017.05
-        //$message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz.]+)/', '${1}bl9990n${2}', $message);
+        $message = preg_replace('/([0-9,{1}])([n])([5])/', '999${1}n', $message);        
         $message = preg_replace('/([0-9,{3,}]+).05([abcdefghijklmopqrstuvwxyz]+)/', '${1}bl9990n${2}', $message);
-        $message = str_replace("daoxc", "dxc", $message);       
-        //$message = str_replace("xc", "x", $message);    
-         $message = preg_replace('/([ ])xc/', 'x', $message);
+        
+        $message = preg_replace('/([ ])xc/', 'x', $message);
         $message = preg_replace('/d.x([0-9]+)/', 'dxc${1}', $message);        
         $message = preg_replace('/dx([0-9]+)/', 'dxc${1}', $message);
-        $message = str_replace("dax0,5.", 'dx9990n.', $message);
         
         $message = preg_replace('/dax([0-9]+)(.)/', 'dx${1}n${2}', $message);
         $message = preg_replace('/đá([0-9]+)(.)/', 'da${1}n${2}', $message);
-        //dd($message);
         
-        //db0.25
+        $message = str_replace("dax0,5.", 'dx9990n.', $message);        
         $message = str_replace("db0.25", 'db999025n', $message);
-        //daoxc2.5.
-        
         $message = str_replace("dxc2.5.", 'dxc9992n.', $message);
-        //dd($message);
-        //db0.5.
         $message = str_replace("db0.5.", 'db9990n.', $message);
+
+        $message = str_replace("daoxc", "dxc", $message);  
         $message = str_replace("xcdao", 'dxc', $message);
-        
+        $message = str_replace("xc.dao", 'dxc', $message);
 
         $message = str_replace("d.b0,5.", 'db9990n.', $message);
-
         $message = str_replace(".b05.", '.b9990n.', $message);
-        $message = str_replace("bd0.5", '.db9990n.', $message);
-        
-        $message = str_replace("b0,5", '.b9990n.', $message);
-        
-        $message = str_replace(".b0.5", '.b9990n', $message);
-        $message = str_replace("xc.dao", 'dxc', $message);
+        $message = str_replace("bd0.5", '.db9990n.', $message);        
+        $message = str_replace("b0,5", '.b9990n.', $message);        
+        $message = str_replace(".b0.5", '.b9990n', $message);        
         $message = str_replace('dav.x', 'dxv', $message);
 
-
-        $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);//.dd5.
-        $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);//.dd5.
-        //dd($message);
-        //10n 7259.2n
-        
-        //$message = preg_replace('/([0-9]+)n.([0-9,{4}]+).([0-9]+)n./', '${1}n.${2}.b${3}n.', $message);
-        //dd($message);
-        //.dd5.
+        $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);
+        $message = preg_replace('/([.])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([.])/', '$1$2$3n$4', $message);       
         $message = preg_replace('/(05)(\s)(db)/', '9990ndb', $message);
         $message = preg_replace('/(05)(\s)(bl)/', '9990ndb', $message);
         $message = preg_replace('/(05)([a-z]+)/', '9990n${2}', $message);
@@ -365,25 +318,16 @@ class TelegramController extends Controller
         $message = $this->formatMessage($message);
         $message = (preg_replace('/([ ]+)/', ' ', $message)); // remove nhieu khoang trang thanh 1 
         $message = preg_replace('/([0-9,{2,}]+)([abcdefghijklmopqrstuvwxyz]+)([0-9,{1,}]+)([n])/', '$1$2$3$4 ', $message);
-        //dd($message); 
         //2nb 10nx
         $message = preg_replace('/([ ])([0-9]+)([n])([abcdefghijklmopqrstuvwxyz]+)([ ])/', '$1$4 $2$3$5', $message);// 2nb => b 2n x 10n 
         $message = preg_replace('/([ ])([0-9]+)([n])([abcdefghijklmopqrstuvwxyz]+)$/', '$1$4 $2$3', $message);// 2nb => b 2n x 10n 
-        //dd($message); 
+        
         $message = preg_replace('/([abcdefghijklmopqrstuvwxyz]+)([ ])([0-9]+)([n])/', '$1$2$3$4 ', $message);
-        //dd($message);
-        $message = preg_replace('/([ ])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([n])/', '$1$2$3$4 ', $message);
-        //dd($message);
-        $message = preg_replace('/([0-9,{1,}]+)([n])([abcdefghijklmopqrstuvwxyz]+)/', ' $3$1$2 ', $message);        
-        //dd($message);  
-        $message = preg_replace('/([0-9]+)([n])/', ' $1$2 ', $message);
-        // dd($message);  
-        $message = (preg_replace('/([0-9]{2,})([abcdefghijklmopqrstuvwxyz]{2,})/', '$1 $2', $message));
-        //dd($message);
+        $message = preg_replace('/([ ])([abcdefghijklmopqrstuvwxyz]+)([0-9]+)([n])/', '$1$2$3$4 ', $message);        
+        $message = preg_replace('/([0-9,{1,}]+)([n])([abcdefghijklmopqrstuvwxyz]+)/', ' $3$1$2 ', $message);                
+        $message = preg_replace('/([0-9]+)([n])/', ' $1$2 ', $message);        
+        $message = (preg_replace('/([0-9]{2,})([abcdefghijklmopqrstuvwxyz]{2,})/', '$1 $2', $message));        
         $message = (preg_replace('/([0-9]{2,})([abcdefghijklmopqrstuvwxyz])/', '$1 $2', $message));
-        //dd($message); 
-        //088 daox15 2d 088 x70 dc
-       
         
         $message = $this->formatMessage($message);
         $message = str_replace("n n", "n", $message);  
